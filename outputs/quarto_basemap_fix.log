@@ -1,0 +1,49 @@
+
+
+processing file: present.qmd
+1/11             
+2/11 [ev set up] 
+3/11             
+4/11 [ev_leaflet]
+5/11             
+6/11 [evt chart] 
+7/11             
+8/11 [evc chart] 
+9/11             
+10/11 [evh chart] 
+11/11             
+output file: present.knit.md
+
+pandoc index.qmd past.qmd
+  to: html
+  output-file: present.html
+  standalone: true
+  title-prefix: LANDFIRE-Powered Landscape Assessment
+  section-divs: true
+  html-math-method: mathjax
+  wrap: none
+  default-image-extension: png
+  css:
+    - styles-darkly.css
+    - styles-flatly.css
+  toc: true
+  variables: {}
+  
+metadata
+  document-css: false
+  link-citations: true
+  date-format: long
+  lang: en
+  editor: source
+  page-layout: full
+  grid:
+    body-width: 1400px
+    sidebar-width: 0px
+    margin-width: 220px
+  theme:
+    light: flatly
+    dark: darkly
+  title: 'Present: Current Ecosystem Conditions'
+  
+Output created: docs/present.html
+

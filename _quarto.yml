@@ -1,0 +1,42 @@
+project:
+  type: website
+  output-dir: docs
+  preview: 
+    watch-inputs: false
+
+website:
+  title: "LANDFIRE-Powered Landscape Assessment"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - href: past.qmd
+        text: Past
+      - href: present.qmd
+        text: Present
+      - href: departure.qmd
+        text: Departure
+      - href: about.qmd
+        text: About
+        
+format:
+  html:
+    page-layout: full
+    grid:
+      body-width: 1400px
+      sidebar-width: 0px
+      margin-width: 220px
+    fig-width: 14
+    fig-height: 8
+    theme: 
+      light: flatly
+      dark: darkly
+      
+    css:
+      - styles-darkly.css
+      - styles-flatly.css
+    toc: true
+
+editor: source
+
+

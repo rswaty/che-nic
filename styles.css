@@ -1,0 +1,24 @@
+
+
+/* Default table text color and background color for Flatly theme */
+table.dataTable {
+  color: #000000;
+  background-color: #ffffff;
+}
+
+table.dataTable th,
+table.dataTable td {
+  color: #000000;
+}
+
+/* Default text color for search and show elements */
+.dataTables_wrapper .dataTables_filter label,
+.dataTables_wrapper .dataTables_length label {
+  color: #000000;
+}
+
+.dataTables_wrapper .dataTables_filter input,
+.dataTables_wrapper .dataTables_length select {
+  color: #000000;
+  background-color: #ffffff;
+}

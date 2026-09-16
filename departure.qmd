@@ -1,0 +1,193 @@
+---
+title: "Vegetation Departure"
+---
+
+```{r}
+#| label: vdep set up
+#| message: false
+#| warning: false
+#| include: false
+
+# load packages
+
+library(scales)
+library(tidyverse)
+library(DT)
+
+# make list of bpss to show
+bps_list <- read_csv("outputs/bps_aoi_attributes.csv") |>
+  filter(BPS_NAME != 'Open Water') |>
+  slice_max(REL_PERCENT, n = 10, with_ties = FALSE) |>
+  select(BPS_MODEL, BPS_NAME, REL_PERCENT)
+
+
+clean_vdep <- read_csv("outputs/clean_vdep.csv") |>
+  filter(model_code %in% bps_list$BPS_MODEL)
+
+scls_descriptions <- read_csv("inputs/scls_descriptions.csv") |>
+  unite(model_label, c("StratumID", "ClassLabelID"), remove = FALSE)
+
+
+
+```
+
+
+
+### Biophysical Settings and Succession Classes within the Vegetation Departure calculation
+
+Using LANDFIRE's Biophysical Settings spatial data to essentially map 'ecosystem habitats' and state-and-transition models to estimate the expected historical amounts of their succession classes we can estimate reference conditions under natural disturbance regimes.  We can then quantify current succession class amounts with LANDFIRE's succession class data.  Below are succession class charts that allow for an exploration of which classes are over or under represented.
+
+LANDFIRE's Succession Classes Product:
+
+> *characterizes current vegetation conditions with respect to the vegetation species composition (leaf-form and life-form, primarily), cover, and height ranges of the successional states that occur within each Biophysical Settings (BPS). SClass can also represent uncharacteristic vegetation components, including exotic species, tree plantations, canopy cover, etc. These components are not found within the compositional or structural variability of successional states defined for a BPS.* [Read more](https://www.landfire.gov/vegetation/sclass){target="blank"}.
+
+
+
+```{r}
+#| label: sclass chart
+#| echo: false
+#| message: false
+#| warning: false
+#| fig.width: 14
+#| fig.height: 12
+#| out-width: "100%"
+
+# wrangle data for chart
+vdep_chart_df <- clean_vdep %>%
+  dplyr::select(c("bps_name", "ref_label",  "current_percent", "ref_percent", "model_code")) %>%
+  pivot_longer(
+    cols = c(`ref_percent`, `current_percent`),
+    names_to = "ref_cur",
+    values_to = "percent" ) 
+
+
+# ---- 1) Join REL_PERCENT onto vdep_chart_df ----
+vdep_chart_df <- vdep_chart_df %>%
+  left_join(
+    bps_list %>%
+      transmute(
+        model_code = BPS_MODEL,
+        REL_PERCENT
+      ),
+    by = "model_code"
+  ) %>%
+  mutate(
+    # Format as whole percent string (e.g., "14%"); coalesce NAs to 0% if needed
+    rel_pct_str = percent(coalesce(REL_PERCENT, 0) / 100, accuracy = 1),
+    # FIX: remove space before comma; keep NBSP after comma to prevent breaking before percent
+    facet_label = sprintf("%s (%s,\u00A0%s)", bps_name, model_code, rel_pct_str)
+  )
+
+# ---- 2) Order succession class factor on x-axis ----
+vdep_chart_df$ref_label <- factor(vdep_chart_df$ref_label, levels = c(
+  "Developed",
+  "Agriculture",
+  "UE",
+  "UN",
+  "E",
+  "D",
+  "C",
+  "B",
+  "A"
+))
+
+# ---- 3) Plot ----
+sclasplot <-
+  ggplot(vdep_chart_df, aes(fill = factor(ref_cur), y = percent, x = ref_label)) +
+  geom_col(width = 0.8, position = position_dodge()) +
+  coord_flip() +
+  scale_x_discrete(limits = levels(vdep_chart_df$ref_label)) +
+  labs(
+    title = "Succession Classes past and present",
+    subtitle = "Top BpSs selected for illustration. Not all succession classes present in all BpSs",
+    caption = "\nData from landfire.gov.",
+    x = "",
+    y = "Acres"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.caption = element_text(hjust = 0, face = "italic"),
+    plot.title.position = "plot",
+    plot.caption.position = "plot",
+    panel.spacing = unit(.05, "lines"),
+    panel.border = element_rect(color = "black", fill = NA, size = 1),
+    strip.background = element_rect(color = "black", size = 1),
+    strip.text = element_text(margin = margin(4, 6, 4, 6))
+  ) +
+  scale_fill_manual(
+    values = c("#3d4740", "#32a852"),  # present (grey), past (green)
+    name = " ",
+    labels = c("Present", "Past")
+  ) +
+  facet_wrap(
+    ~ facet_label,
+    nrow = 5,
+    labeller = label_wrap_gen(width = 25)  # wraps on normal spaces; NBSP keeps ", 14%" together
+  ) +
+  scale_y_continuous(labels = comma)
+
+sclasplot
+
+```
+
+## Succession Class Descriptions
+
+Below is a table of the Succession Class descriptions for the Biophysical Settings charted above.  For complete Biophysical Settings descriptions see links on [Past](./past.html){target='blank'} page. 
+
+
+
+
+```{r}
+#| label: sclass descriptions
+#| echo: false
+#| message: false
+#| warning: false
+
+
+for_scl_table <- clean_vdep %>%
+  left_join(scls_descriptions, by = "model_label") %>%
+  # keep only rows with no NAs in any column
+  filter(if_all(everything(), ~ !is.na(.x))) %>%
+  distinct(Description, .keep_all = TRUE) %>%
+  select(-1) %>%  # or explicitly name the column you intend to drop
+  select(
+    bps_name,
+    model_code,
+    ref_label,
+    StateClassID,
+    Description
+  ) %>%
+  rename(
+    "Biophysical Setting" = bps_name,
+    "Class"              = ref_label,
+    "Model Code"         = model_code,
+    "Class Label"        = StateClassID
+  )
+
+
+
+
+# Render the table with DT
+datatable(for_scl_table, options = list(
+  columnDefs = list(list(
+    targets = 3, # Index of the Description column (0-based)
+    render = JS("function(data, type, row, meta) {
+      return type === 'display' && data.length > 50 ? 
+        '<span title=\"' + data + '\">' + data.substr(0, 50) + '...</span>' : data;
+    }")
+  )),
+  #scrollX = TRUE,
+  autoWidth = TRUE,
+  lengthMenu = list(c(5, 10, -1), c('5', '10', 'All')) # Add options for 5, 10, and all entries
+))
+
+
+
+
+```
+
+
+
+
+
+

@@ -1,0 +1,489 @@
+---
+title: "Historical Ecosystems and Fire Return Intervals"
+---
+
+```{r}
+#| label: set up
+#| message: false
+#| warning: false
+#| include: false
+
+# load packages
+
+library(htmltools)
+library(jsonlite)
+library(leaflet)
+library(leaflet.providers)
+library(RColorBrewer)
+library(scales)
+library(sf)
+library(stringr)
+library(tidyverse)
+library(tmap)
+
+# load input data
+          
+
+shp <- st_read("inputs/cnnf.shp") |>
+  st_transform(crs = 4326)
+
+hexs <- st_read("outputs/landfire_hexes.gpkg") |>
+  st_transform(crs = 4326)
+
+bps_data <- read.csv("outputs/bps_aoi_attributes.csv")
+
+
+# Replace 'path_to_map_zones_shapefile' and 'path_to_additional_shapefile' with the actual paths to your shapefiles
+map_zones <- st_read("inputs/conus_mapzones_102611.shp", quiet = TRUE) |> 
+  st_transform(crs = 4326)
+
+
+
+
+```
+
+
+
+### LANDFIRE's Biophysical Settings
+
+LANDFIRE's Biophysical Settings (BpSs) are the source data for the maps and charts below. 
+
+
+> *BpS models represent the vegetation system that may have been dominant on the landscape prior to Euro-American settlement. These models are based on a combination of the current environment and an approximation of the historical disturbance regime.* [Read more](https://landfire.gov/bps.php){target="blank"}.
+
+Check out this 3-minute tutorial for a quick refresher on the [basics of Biophysical Settings Models](https://youtu.be/xjaWJCe7udQ){target="blank"}.
+
+Use this page as a starting point to explore the most prevalent BpSs for your analysis area. In addition to the charts and maps, the historical disturbance data can be directly accessed using this site.
+
+## Most prevalent historical ecosystems and fire return interval map
+
+In the map below we present the most dominant historical ecosystems and historical fire return intervals per 10k acre hexagon. The LANDFIRE datasets are developed and delivered at 30M resolution.  This hexagon approach gives estimate for quick review. 
+
+**Map tips:**
+
+* Hover over hexagon to get label of selected layer
+* If you have multiple layers selected in top-right layer control box, the top one will be displayed.
+* Colors of Existing Vegetation Cover and Height charts below match those of the map
+* NoData values in the Fire Return Interval layer typically indicate an "Open Water" underlying BpS, or barren ground. 
+
+```{r}
+#| label: bps and fri leaflet
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-width: 10
+#| fig.height: 10
+
+
+# --- BPS palette (categorical) ---
+base_palette <- RColorBrewer::brewer.pal(12, "Paired")
+bps_names    <- sort(unique(hexs$bps_name))
+bps_colors   <- colorRampPalette(base_palette)(length(bps_names))
+pal_bps      <- colorFactor(palette = bps_colors, domain = bps_names)
+
+# --- FRI palette using custom bins/colors (from your table) ---
+no_data_color <- "#4D4D4D"
+
+# Breaks are right-closed (prev, break]; adjust `right = FALSE` if you prefer [prev, break)
+fri_breaks <- c(-Inf, 5, 15, 35, 100, 200, 500, 1300, Inf)
+
+# 8 colors to match 8 intervals; duplicate the last color for the overflow bin (>=1300)
+fri_colors <- c("#BF4A3F", "#F7AC74", "#FFF2A8", "#D5E6CF", "#CED8ED", "#7D9FD1", "#1C76BA", "#1C76BA")
+
+fri_vals  <- hexs$fri_allfir
+fri_valid <- fri_vals[fri_vals != -9999 & !is.na(fri_vals)]
+
+pal_fri <- colorBin(
+  palette  = fri_colors,
+  domain   = fri_valid,
+  bins     = fri_breaks,
+  na.color = no_data_color,
+  right    = TRUE
+)
+
+# --- Legend labels exactly matching breaks ---
+fri_labels <- c(
+  "≤ 5",
+  "5–15",
+  "15–35",
+  "35–100",
+  "100–200",
+  "200–500",
+  "500–1300",
+  "≥ 1300"
+)
+
+# --- Fit to data extent ---
+bbox <- st_bbox(hexs)
+bbox_list <- as.list(bbox)
+json_output <- toJSON(bbox_list, keep_vec_names = TRUE)  # if needed elsewhere
+
+# --- Build map ---
+m <- leaflet(hexs) %>%
+  addProviderTiles(providers$Esri.WorldTopoMap) %>%
+  fitBounds(
+    lng1 = bbox_list$xmin, lat1 = bbox_list$ymin,
+    lng2 = bbox_list$xmax, lat2 = bbox_list$ymax
+  ) %>%
+  
+  # Layer 1: BPS polygons (categorical)
+  addPolygons(
+    fillColor = ~pal_bps(bps_name),
+    color = "#BDBDC3",
+    weight = 1,
+    opacity = 1,
+    fillOpacity = 1.0,
+    highlightOptions = highlightOptions(
+      weight = 2, color = "#666", fillOpacity = 1.0, bringToFront = TRUE
+    ),
+    label = ~bps_name,
+    labelOptions = labelOptions(
+      style = list("font-weight" = "normal", padding = "3px 8px"),
+      textsize = "15px", direction = "auto"
+    ),
+    group = "Historical Ecosystems"
+  ) %>%
+  
+  # Layer 2: FRI polygons (custom bins/colors; -9999/NA -> dark gray)
+  addPolygons(
+    fillColor = ~ifelse(
+      fri_allfir == -9999 | is.na(fri_allfir),
+      no_data_color,
+      pal_fri(fri_allfir)
+    ),
+    color = "#BDBDC3",
+    weight = 1,
+    opacity = 1,
+    fillOpacity = 1.0,
+    highlightOptions = highlightOptions(
+      weight = 2, color = "#666", fillOpacity = 1.0, bringToFront = TRUE
+    ),
+    label = ~paste0(
+      "FRI (years): ",
+      ifelse(fri_allfir == -9999 | is.na(fri_allfir), "No Data", fri_allfir)
+    ),
+    labelOptions = labelOptions(
+      style = list("font-weight" = "normal", padding = "3px 8px"),
+      textsize = "15px", direction = "auto"
+    ),
+    group = "Fire Return Interval"
+  ) %>%
+  
+  # Layer control (checkboxes to toggle BPS/FRI)
+  addLayersControl(
+    overlayGroups = c("Historical Ecosystems", "Fire Return Interval"),
+    options = layersControlOptions(collapsed = FALSE)
+  ) %>%
+  
+  # Start with FRI hidden (optional)
+  hideGroup("Fire Return Interval")
+# 
+# # --- FRI Legend (explicit labels & colors) ---
+# m <- m %>%
+#   addLegend(
+#     position = "bottomright",
+#     colors   = fri_colors,  # length 8
+#     labels   = fri_labels,  # length 8
+#     title    = "FRI (years)",
+#     opacity  = 1
+#   ) %>%
+#   addLegend(
+#     position = "bottomright",
+#     colors   = no_data_color,
+#     labels   = "No Data",
+#     title    = NULL,
+#     opacity  = 1
+#   )
+
+# Print map
+m
+
+
+```
+
+
+*Biophysical Settings with minor representation removed from map and chart below for clarity*
+<br>
+<br>
+
+
+
+```{r bps chart, message=FALSE, warning=FALSE, echo=FALSE, fig.width=14, fig.height=8, out.width="100%"}
+
+# summarize data by BpS Name attribute for chart.  We do this as an AoI may have multiple variants if it crosses multiple Map Zones. We also limit output dataframe to the top 10 BpSs.  Customize as needed!
+
+bps_name <- bps_data %>%
+  group_by(BPS_NAME) %>%
+  summarize(ACRES = sum(ACRES),
+            REL_PERCENT = sum(REL_PERCENT)) %>%
+  arrange(desc(REL_PERCENT)) %>%
+  top_n(n = 10, wt = REL_PERCENT)
+
+# plot
+
+bps_acres_chart <-
+  ggplot(data = bps_name, aes(x = BPS_NAME, y = ACRES)) + 
+  geom_bar(stat = "identity") +
+  labs(
+    title = "Top 10 Biophysical Settings",
+    subtitle = "Represents dominant vegetation systems pre-European colonization",
+    caption = "Data from landfire.gov.",
+    x = "",
+    y = "Acres") +
+  scale_x_discrete(limits = rev(bps_name$BPS_NAME),
+                   labels = function(x) str_wrap(x, width = 18)) +
+  coord_flip() +
+  theme_bw(base_size = 14) +
+  scale_y_continuous(labels = comma)
+
+bps_acres_chart
+```
+
+
+
+## Historical Fire Regimes
+
+
+
+```{r fire bar, echo=FALSE, message=FALSE, warning=FALSE, fig.width=14, fig.height=8, out.width="100%"}
+# read bps attribute table .csv and summarize
+annualFire <- bps_data %>%
+  mutate(annual_fire_acres = ((1/FRI_ALLFIR)*ACRES)) %>%
+  filter(BPS_NAME != 'Open Water') %>%
+  group_by(BPS_NAME) %>%
+  summarize(acres = sum(annual_fire_acres)) %>%
+  arrange(desc(acres)) %>%
+  top_n(n = 10, wt = acres)
+
+# plot
+fireChart <- 
+  ggplot(data = annualFire, aes(x = BPS_NAME, y = acres)) +
+  geom_bar(stat = "identity") +
+  labs(
+    title = "Average Annual Acres Burned Prior to European Colonization ",
+    subtitle = "Per Biophysical Setting",
+    caption = "\nData from landfire.gov",
+    x = "",
+    y = "Acres") +
+  scale_x_discrete(limits = rev(annualFire$BPS_NAME),
+                   labels = function(x) str_wrap(x, width = 18)) +
+  scale_y_continuous(name = 'Acres', labels = comma) +
+  coord_flip() +
+  theme_bw(base_size = 14) +
+  theme(plot.margin = margin(10, 30, 0, 0))
+
+fireChart
+
+
+```
+
+<br>
+
+## Historical fire regimes split out by fire type
+
+```{r}
+#| label: historical fire regimes
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-height: 10
+#| fig-width: 14
+#| out-width: "100%"
+
+# Rename columns for clarity
+bps_data_clean <- bps_data %>%
+  rename(
+    Replacement = FRI_REPLAC,
+    Mixed = FRI_MIXED,
+    Surface = FRI_SURFAC
+  )
+
+# Filter top 10 BPS_NAMEs by REL_PERCENT
+top_bps <- bps_data_clean %>%
+  arrange(desc(REL_PERCENT)) %>%
+  slice_head(n = 10) %>%
+  mutate(
+    BPS_LABEL = paste0(BPS_NAME, " (", round(REL_PERCENT), "%)")
+  )
+
+# Reshape to long format
+bps_long <- top_bps %>%
+  dplyr::select(BPS_LABEL, REL_PERCENT, Replacement, Mixed, Surface) %>%
+  pivot_longer(cols = c(Replacement, Mixed, Surface),
+               names_to = "Fire_Regime",
+               values_to = "Years") %>%
+  filter(Years >= 0)
+
+# Set order of Fire types
+bps_long$Fire_Regime <- factor(bps_long$Fire_Regime, levels = c(
+  "Surface",
+  "Mixed",
+  "Replacement"
+))
+
+# Order BPS_LABEL by REL_PERCENT
+bps_long$BPS_LABEL <- factor(bps_long$BPS_LABEL,
+                             levels = top_bps$BPS_LABEL[order(top_bps$REL_PERCENT, decreasing = TRUE)])
+
+# Plot
+ fri_chart <- 
+  ggplot(bps_long, aes(x = Years, y = Fire_Regime)) +
+  geom_bar(stat = "identity", 
+           fill = "grey50",
+           width = 0.8, ) +  # grey bars
+  facet_wrap(~ BPS_LABEL, 
+             scales = "free_x",
+             labeller = label_wrap_gen(width = 25), 
+             nrow(3)) +
+  theme_minimal(base_size = 12) +
+  labs(
+    title = "Historical Fire Regimes for top BpSs",
+    subtitle = "Fire types: Replacement = 75 - 100% top kill, Mixed = 26 - 74%, Surface = 0 - 25% \nPercentage of landscape in BpS in parentheses.",
+    caption = "\nData from landfire.gov.",
+    x = "Average years between fires",
+    y = "") +
+  theme(panel.spacing = unit(.1, "lines"),
+        panel.border = element_rect(color = "black", fill = NA, linewidth = 1), 
+        strip.background = element_rect(color = "black", linewidth  = 1)) +
+   theme(plot.margin = unit(c(1, 1, 1, 1), 'cm') ) +
+  scale_x_continuous(labels = comma)
+
+ fri_chart 
+
+
+
+```
+
+
+
+
+
+
+## Associated Biophysical Settings descriptions
+
+Below you will find a list of Biophysical Settings (BpS) in the map and chart  linked to their descriptions.  Note:
+
+* There may be multiple BpS names listed.  If so, this is because your landscape spans multiple LANDFIRE Map Zones and has multiple 'variants' for those BPSs.  
+* The names below are followed by a number in parentheses.  The first 5-digit number is the BPS Code.  The following numbers reprent the Map Zones.  For example, "13020_65_66" is ‘Laurentian-Acadian Northern Hardwoods forest’ BpS (13020) in Map Zones 65 and 66 (may or may not occur in this landscape).
+* The map below will help orient you to the Map Zones for your general landscape (just a halo-not exact analysis area).
+
+<br>
+
+
+```{r}
+#| label: mz map
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-height: 8
+#| out-width: "100%"
+
+# ============================================================
+# MZ map size / zoom — edit these two settings as needed
+# ============================================================
+# fig-height above  = map height in inches (try 6 short … 10 tall)
+# out-width above   = map width as % of page (keep "100%" for most screens)
+# pad_deg below     = starting zoom padding in degrees around the landscape
+#                     (smaller = zoomed in closer; larger = more of CONUS)
+pad_deg <- 4
+# ============================================================
+
+sf::sf_use_s2(FALSE)
+
+# halo approach for complex shps
+# shp_blob <- shp |>
+#   sf::st_union() |>
+#   sf::st_convex_hull() |>
+#   sf::st_as_sf()
+
+# sf::st_write(shp_blob, "outputs/shp_blob.gpkg")
+
+shp_blob <- sf::st_read("outputs/shp_blob.gpkg", quiet = TRUE)
+
+# start the view near the landscape (users can still zoom out)
+bb <- sf::st_bbox(shp_blob)
+bb[c("xmin", "ymin")] <- bb[c("xmin", "ymin")] - pad_deg
+bb[c("xmax", "ymax")] <- bb[c("xmax", "ymax")] + pad_deg
+
+tmap_mode("view")
+
+tm_shape(map_zones, bbox = bb) +
+  tm_borders(col = "black", lwd = 2) +
+  tm_text("ZONE_NUM", size = 1, fontface = "bold") +
+  tm_shape(shp_blob) +
+  tm_fill(col = "green", alpha = 0.3) +
+  tm_borders(col = "green", lwd = 2) +
+  tm_basemap("Esri.WorldTopoMap") +
+  tm_layout(legend.show = FALSE)
+
+
+```
+
+<br>
+
+
+
+**Clicking link will initiate a download of a Microsoft Word file.  If you have any issues with this please contact [LANDFIRE](mailto:landfire@tnc.org){target="blank"}.**
+
+
+```{r}
+#| label: get bps docs
+#| echo: false
+#| message: false
+#| warning: false
+
+
+library(htmltools)
+library(dplyr)
+
+
+# Get unique model codes for the top 10 BPS names
+unique_model_codes <- unique(bps_data$BPS_MODEL[bps_data$BPS_NAME %in% bps_name$BPS_NAME])
+
+# Filter the dataframe to include only rows with unique model codes and top 10 BPS names
+bps_urls <- bps_data %>% 
+  filter(BPS_MODEL %in% unique_model_codes) %>% 
+  distinct(BPS_MODEL, .keep_all = TRUE) %>%
+  dplyr::select(c(BPS_NAME, BPS_MODEL))
+
+# Merge top_bps with bps_urls to get REL_PERCENT
+bps_urls <- bps_urls %>%
+  left_join(bps_data %>%
+              dplyr::select(BPS_MODEL, REL_PERCENT), 
+            by = "BPS_MODEL")
+
+bps_urls <- bps_urls %>%
+  group_by(BPS_NAME, BPS_MODEL) %>%
+  summarize(REL_PERCENT = sum(REL_PERCENT))
+
+# URL template
+url_template <- "https://github.com/rswaty/bps_docs_parse/raw/main/all_bps_docs/10080_1_2_3_7.docx"
+
+# Generate URLs by replacing the model_code in the URL template
+bps_urls <- bps_urls %>%
+  mutate(URL = sapply(BPS_MODEL, function(code) {
+    gsub("10080_1_2_3_7", code, url_template)
+  }))
+
+# Create clickable hyperlinks with BPS names, model codes, and REL_PERCENT without decimal places
+clickable_names <- sapply(seq_along(bps_urls$URL), function(i) {
+  paste0('<a href="', bps_urls$URL[i], '" target="_blank">', bps_urls$BPS_NAME[i], ' (', bps_urls$BPS_MODEL[i], ') - ', round(bps_urls$REL_PERCENT[i]), '%</a>')
+})
+
+# Render the list of hyperlinked BPS names as HTML
+html_output <- HTML(paste(clickable_names, collapse = "<br>"))
+
+# Print the HTML output
+html_output
+
+
+
+
+```
+
+
+<br>
+
+
+<br>
+

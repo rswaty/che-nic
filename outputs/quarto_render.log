@@ -1,0 +1,68 @@
+[1/5] present.qmd
+
+
+processing file: present.qmd
+1/11             
+2/11 [ev set up] 
+3/11             
+4/11 [ev_leaflet]
+5/11             
+6/11 [evt chart] 
+7/11             
+8/11 [evc chart] 
+9/11             
+10/11 [evh chart] 
+11/11             
+output file: present.knit.md
+
+[2/5] index.qmd
+
+
+processing file: index.qmd
+1/7                 
+2/7 [libraries]     
+3/7                 
+4/7 [read shapefile]
+5/7                 
+6/7 [locator map]   
+7/7                 
+output file: index.knit.md
+
+[3/5] about.qmd
+[4/5] departure.qmd
+
+
+processing file: departure.qmd
+1/7                      
+2/7 [vdep set up]        
+3/7                      
+4/7 [sclass chart]       
+5/7                      
+6/7 [sclass descriptions]
+7/7                      
+output file: departure.knit.md
+
+[5/5] past.qmd
+
+
+processing file: past.qmd
+1/15                          
+2/15 [set up]                 
+3/15                          
+4/15 [bps and fri leaflet]    
+5/15                          
+6/15 [bps chart]              
+7/15                          
+8/15 [fire bar]               
+9/15                          
+10/15 [historical fire regimes]
+11/15                          
+12/15 [mz map]                 
+13/15                          
+14/15 [get bps docs]           
+15/15                          
+output file: past.knit.md
+
+
+Output created: docs/index.html
+

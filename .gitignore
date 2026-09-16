@@ -2,3 +2,11 @@
 .Rhistory
 .RData
 .Ruserdata
+
+# large rasters — do not commit unless tracked with Git LFS
+*.tif
+*.tfw
+inputs/landfire_data.zip
+inputs/landfire_data.tif
+
+/.quarto/

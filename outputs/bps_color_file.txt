@@ -1,0 +1,17 @@
+1581,106,0,138,255,Boreal Acidic Peatland Systems
+1608,106,0,138,255,Boreal Acidic Peatland Systems
+1568,147,194,114,255,Boreal White Spruce-Fir-Hardwood Forest-Inland
+1596,147,194,114,255,Boreal White Spruce-Fir-Hardwood Forest-Inland
+1602,153,66,100,255,Laurentian Pine-Oak Barrens-Jack Pine
+1573,153,66,100,255,Laurentian Pine-Oak Barrens-Jack Pine
+1583,232,189,255,255,Laurentian-Acadian Alkaline Conifer-Hardwood Swamp
+1610,232,189,255,255,Laurentian-Acadian Alkaline Conifer-Hardwood Swamp
+1562,76,230,150,255,Laurentian-Acadian Northern Hardwoods Forest-Hemlock
+1561,76,230,0,255,Laurentian-Acadian Northern Hardwoods Forest-Hemlock
+1589,76,230,150,255,Laurentian-Acadian Northern Hardwoods Forest-Hemlock
+1588,76,230,0,255,Laurentian-Acadian Northern Hardwoods Forest-Hemlock
+2724,255,167,127,255,Laurentian-Acadian Northern Pine(-Oak) Forest-Pine Dominated
+2726,255,167,127,255,Laurentian-Acadian Northern Pine(-Oak) Forest-Pine Dominated
+1569,208,255,99,255,Laurentian-Acadian Pine-Hemlock-Hardwood Forest
+1586,0,168,107,255,Laurentian-Acadian Shrub-Herbaceous Wetland Systems
+1613,0,168,107,255,Laurentian-Acadian Shrub-Herbaceous Wetland Systems

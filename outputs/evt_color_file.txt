@@ -1,0 +1,10 @@
+7241,0,92,0,255,Laurentian-Acadian Pine-Hemlock-Hardwood Forest
+7299,1,1,1,255,Developed-Roads
+7301,192,255,138,255,Laurentian-Acadian Sub-boreal Aspen-Birch Forest
+7302,171,255,138,255,Laurentian-Acadian Northern Hardwoods Forest
+7362,174,245,224,255,Laurentian-Acadian Northern Pine Forest
+7366,0,92,0,255,Laurentian-Acadian Pine-Hemlock Forest
+7481,50,137,168,255,Laurentian-Acadian Alkaline Conifer-Hardwood Swamp
+9056,186,163,119,255,Boreal-Laurentian Conifer Acidic Swamp and Treed Poor Fen
+9089,182,250,227,255,Laurentian-Acadian Sub-boreal Mesic Balsam Fir-Spruce Forest
+9112,174,245,224,255,Laurentian Jack Pine-Red Pine Forest

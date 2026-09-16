@@ -1,0 +1,440 @@
+---
+title: "Present: Current Ecosystem Conditions"
+---
+
+```{r include=FALSE}
+#| label: ev set up
+#| message: false
+#| warning: false
+
+
+# packages
+library(jsonlite)
+library(leaflet)
+library(RColorBrewer)
+library(scales)
+library(sf)
+library(stringr)
+library(tidyverse)
+
+
+hexs <- st_read("outputs/landfire_hexes.gpkg") |>
+  st_transform(crs = 4326)
+
+evc_ramp <- read_csv('inputs/LF22_EVC_230_acc.csv')
+evh_ramp <- read_csv('inputs/LF22_EVH_230_acc.csv')
+
+# evc and evh datasets read in below due to major wrangling there-may move here in the future
+
+evtname <- read_csv('outputs/evt_aoi_attributes.csv') |>
+  arrange(desc(ACRES)) |>
+  slice_head(n = 10) |>
+  dplyr::select(c(EVT_NAME, ACRES))
+
+
+```
+
+LANDFIRE's [Existing Vegetation Type, Cover and Height](https://landfire.gov/vegetation.php){target="blank"} datasets describe vegetation conditions.
+
+-   Existing Vegetation Type (EVT) - represents the current distribution of the terrestrial ecological systems classification, developed by NatureServe for the western hemisphere, through 2016.
+-   Existing Vegetation Cover (EVC) - represents the vertically projected percent cover of the live canopy layer for a 30-m cell.
+-   Existing Vegetation Height (EVH) - represents the average height of the dominant vegetation for a 30-m cell.
+
+[Read more about LANDFIRE Vegetation Products](https://landfire.gov/vegetation.php){target="blank"}
+
+## Map of prevalent existing vegetation types, height and cover 
+
+In the map below we present the most dominant Existing Vegetation Types, Height and Cover classes per 10k acre hexagon.  The map is followed by charts.
+
+The LANDFIRE datasets are developed and delivered at 30M resolution.  This hexagon approach gives estimate for quick review. 
+
+**Map tips:**
+
+* Hover over hexagon to get label of selected layer
+* If you have multiple layers selected in top-right layer control box, the top one will be displayed.
+* Colors of Existing Vegetation Cover and Height charts below match those of the map
+
+
+
+```{r}
+#| label: ev_leaflet
+#| echo: false
+#| message: false
+#| warning: false
+#| fig.width: 10
+#| fig.height: 10
+
+
+# -------------------------
+# 1) Palettes & lookups
+# -------------------------
+
+# No-data color (override ramp's -9999 if you prefer dark gray)
+no_data_color <- "#4D4D4D"
+
+# EVT palette (categorical, like your BPS approach)
+base_palette <- RColorBrewer::brewer.pal(12, "Paired")
+evt_names    <- sort(unique(hexs$evt_name))
+evt_colors   <- colorRampPalette(base_palette)(length(evt_names))
+pal_evt      <- colorFactor(palette = evt_colors, domain = evt_names)
+
+# Helper: convert a ramp table (evc_ramp / evh_ramp) to a clean lookup
+# Uses 0–255 R,G,B columns to make hex; replaces -9999 with your no_data_color
+
+to_hex_lut <- function(ramp_tbl, no_data_hex = no_data_color) {
+  ramp_tbl %>%
+    dplyr::mutate(
+      Value = as.integer(Value),
+      hex   = rgb(R, G, B, maxColorValue = 255),
+      hex   = ifelse(Value == -9999, no_data_hex, hex)
+    ) %>%
+    dplyr::select(Value, CLASSNAMES, hex)
+}
+
+evc_lut <- to_hex_lut(evc_ramp)
+evh_lut <- to_hex_lut(evh_ramp)
+
+
+# -------------------------
+# 2) Attach hex colors by value to the sf
+# -------------------------
+hexs2 <- hexs %>%
+  mutate(
+    evc_value = as.integer(evc_value),
+    evh_value = as.integer(evh_value)
+  ) %>%
+  # join brings in the hex for each code
+  left_join(
+    evc_lut %>% rename(evc_value = Value, evc_hex = hex, evc_class = CLASSNAMES),
+    by = "evc_value"
+  ) %>%
+  left_join(
+    evh_lut %>% rename(evh_value = Value, evh_hex = hex, evh_class = CLASSNAMES),
+    by = "evh_value"
+  )
+
+# Optional sanity checks (helpful during development)
+evc_missing <- setdiff(unique(hexs2$evc_value), evc_lut$Value)
+evh_missing <- setdiff(unique(hexs2$evh_value), evh_lut$Value)
+if (length(evc_missing) > 0) message("EVC values without colors: ", paste(evc_missing, collapse = ", "))
+if (length(evh_missing) > 0) message("EVH values without colors: ", paste(evh_missing, collapse = ", "))
+
+# -------------------------
+# 3) Fit to extent
+# -------------------------
+bbox <- sf::st_bbox(hexs2)
+bbox_list <- as.list(bbox)
+# json_output <- toJSON(bbox_list, keep_vec_names = TRUE)  # if you need elsewhere
+
+# -------------------------
+# 4) Leaflet map with 3 overlay groups
+# -------------------------
+leaflet(hexs2) %>%
+  addProviderTiles(providers$Esri.WorldTopoMap) %>%
+  fitBounds(
+    lng1 = bbox_list$xmin, lat1 = bbox_list$ymin,
+    lng2 = bbox_list$xmax, lat2 = bbox_list$ymax
+  ) %>%
+  
+  # Layer A: EVT (Existing Vegetation Type) - categorical palette
+  addPolygons(
+    fillColor = ~pal_evt(evt_name),
+    color = "#BDBDC3",
+    weight = 1,
+    opacity = 1,
+    fillOpacity = 1.0,
+    highlightOptions = highlightOptions(
+      weight = 2, color = "#666", fillOpacity = 1.0, bringToFront = TRUE
+    ),
+    label = ~evt_name,
+    labelOptions = labelOptions(
+      style = list("font-weight" = "normal", padding = "3px 8px"),
+      textsize = "15px", direction = "auto"
+    ),
+    group = "Existing Vegetation Type"
+  ) %>%
+  
+  # Layer B: EVC (Existing Vegetation Cover) - colors from evc_ramp via evc_value
+  addPolygons(
+    fillColor = ~ifelse(is.na(evc_value) | evc_value == -9999, no_data_color, evc_hex),
+    color = "#BDBDC3",
+    weight = 1,
+    opacity = 1,
+    fillOpacity = 1.0,
+    highlightOptions = highlightOptions(
+      weight = 2, color = "#666", fillOpacity = 1.0, bringToFront = TRUE
+    ),
+    label = ~paste0(
+      "Cover: ", evc_class
+    ),
+    labelOptions = labelOptions(
+      style = list("font-weight" = "normal", padding = "3px 8px"),
+      textsize = "15px", direction = "auto"
+    ),
+    group = "Existing Vegetation Cover"
+  ) %>%
+  
+  # Layer C: EVH (Existing Vegetation Height) - colors from evh_ramp via evh_value
+  addPolygons(
+    fillColor = ~ifelse(is.na(evh_value) | evh_value == -9999, no_data_color, evh_hex),
+    color = "#BDBDC3",
+    weight = 1,
+    opacity = 1,
+    fillOpacity = 1.0,
+    highlightOptions = highlightOptions(
+      weight = 2, color = "#666", fillOpacity = 1.0, bringToFront = TRUE
+    ),
+    label = ~paste0(
+      "Height: ", evh_class
+    ),
+    labelOptions = labelOptions(
+      style = list("font-weight" = "normal", padding = "3px 8px"),
+      textsize = "15px", direction = "auto"
+    ),
+    group = "Existing Vegetation Height"
+  ) %>%
+  
+  # Layer control
+  addLayersControl(
+    overlayGroups = c("Existing Vegetation Type",
+                      "Existing Vegetation Cover",
+                      "Existing Vegetation Height"),
+    options = layersControlOptions(collapsed = FALSE)
+  ) %>%
+  
+  # Optionally start with EVC/EVH hidden
+  hideGroup("Existing Vegetation Cover") %>%
+  
+  # Optionally start with EVC/EVH hidden
+
+  # Start with EVC/EVH hidden
+  hideGroup("Existing Vegetation Cover") %>%
+  hideGroup("Existing Vegetation Height") 
+  
+  
+```
+
+<br>
+
+### Top Existing Vegetation Types
+
+```{r evt chart, fig.height=8, fig.width=14, out.width="100%", message=FALSE, warning=FALSE}
+#| echo: false
+
+# plot
+evtChart <-
+  ggplot(data = evtname, aes(x = EVT_NAME, y = ACRES)) +
+  geom_bar(stat = "identity") +
+  labs(
+    title = "Top Existing Vegetation Types",
+    caption = "Data from landfire.gov",
+    x = "",
+    y = "Percent of landscape") +
+  scale_x_discrete(limits = rev(evtname$EVT_NAME),
+                   labels = function(x) str_wrap(x, width = 18)) +
+  coord_flip() +
+  theme_bw(base_size = 14) +
+  scale_y_continuous(labels = comma)
+
+
+
+evtChart
+```
+
+<br>
+
+### Existing Vegetation Cover
+
+```{r evc chart, echo=FALSE, message=FALSE, warning=FALSE, fig.width=14, fig.height=8, out.width="100%"}
+evcname <- read.csv("outputs/evc_aoi_attributes.csv") %>% 
+  mutate(type = if_else(Value %in% 11, "Open Water",
+                                             if_else(Value %in% 12, "Snow / Ice",
+                                                     if_else(Value %in% c(13:25), "Developed",
+                                                             if_else(Value %in% 31, "Barren",
+                                                                     if_else(Value %in% c(60:70), "Agriculture",
+                                                                             if_else(Value %in% 32, "Quarries",
+                                                                                     if_else(Value %in% 100, "Sparse Vegetation",
+                                                                                             if_else(Value %in% c(101:199), "Tree",
+                                                                                                     if_else(Value %in% c(201:299), "Shrub",
+                                                                                                             if_else(Value %in% c(301:399), "Herb",
+                                                                                                                     "Other")))))))))))
+
+
+
+# create reverse substr() function
+revSubstr <- function(x, start, stop) {
+  x <- strsplit(x, "")
+  sapply(x, 
+         function(x) paste(rev(rev(x)[start:stop]), collapse = ""), 
+         USE.NAMES = FALSE)  }
+
+# create cover column based on 2nd and 3rd to last Values of classname
+# if "Other" type, make 0
+evcname <- evcname %>% mutate(cover = as.numeric(if_else(Value > 100,
+                                                         revSubstr(evcname$CLASSNAMES, start = 2, stop = 3),
+                                                         "0")))
+
+# create bin breaks for grouping
+breaks <- seq(0, 100, 10)
+# create intervals for grouping and summarize
+# also create factor order for "type"
+evcgroup <- evcname %>%
+  mutate(interval = cut(cover,
+                        breaks, 
+                        include.lowest = TRUE, 
+                        right = T,
+                        labels = c("0-9", "10-19", "20-29", "30-39", "40-49", "50-59", "60-69", "70-79", 
+                                   "80-89", "90-100")),
+         type = factor(type, levels = c("Tree", "Shrub", "Herb", "Open Water", "Snow / Ice", "Developed", "Agriculture", "Sparse Vegetation", "Barren", "Quarries", "Other"))) %>%
+  group_by(type, interval) %>%
+  summarize(COUNT = sum(Freq),
+            acres = sum(ACRES),
+            rel_percent = sum(REL_PERCENT))
+
+# add label and legend names based on condition
+evcgroup <- evcgroup %>% mutate(label = if_else(type %in% c("Tree", "Shrub", "Herb"),
+                                                paste0(type, " Cover = ", interval, "%"), as.character(type)),
+                                legend = if_else(type %in% c("Tree", "Shrub", "Herb", "Open Water"),
+                                                 type, as.factor("Other")))
+
+# turn current label order to factors
+evclabel.list <- evcgroup$label
+evcgroup <- evcgroup %>% mutate(label = fct_rev(factor(label, evclabel.list)))
+
+# join in custom cols column to color bars by specific label
+
+evc_group_cols <- read.csv("inputs/evc_group_acc.csv")
+
+evcgroup <- left_join(evcgroup, evc_group_cols, by = "label")
+
+evcgroup$label <- factor(evcgroup$label, levels = rev(evcgroup$label))
+
+evcgroup <- evcgroup %>%
+  filter(rel_percent > 0.01)
+
+# plot
+evcChart <-
+  ggplot(data = evcgroup, aes(x = label, y = acres, fill = colors)) +
+  geom_bar(stat = "identity") +
+  labs(
+    title = "Existing Vegetation Cover",
+    caption = "Data from landfire.gov",
+    x = "",
+    y = "Acres") +
+  scale_fill_identity() +
+  coord_flip() +
+  theme_classic(base_size = 14) +
+  theme(legend.position = "none") +
+  scale_y_continuous(labels = comma)
+
+
+evcChart
+
+```
+
+<br>
+
+### Existing Vegetation Height
+
+
+```{r evh chart, echo=FALSE, message=FALSE, warning=FALSE, fig.width=14, fig.height=8, out.width="100%"}
+
+# load evh attribute table
+evhname <- read.csv(file = "outputs/evh_aoi_attributes.csv") %>% 
+  mutate(type = if_else(Value %in% 11, "Open Water",
+                                             if_else(Value %in% 12, "Snow / Ice",
+                                                     if_else(Value %in% c(13:25), "Developed",
+                                                             if_else(Value %in% 31, "Barren",
+                                                                     if_else(Value %in% c(60:70), "Agriculture",
+                                                                             if_else(Value %in% 32, "Quarries",
+                                                                                     if_else(Value %in% 100, "Sparse Vegetation",
+                                                                                             if_else(Value %in% c(101:199), "Tree",
+                                                                                                     if_else(Value %in% c(201:299), "Shrub",
+                                                                                                             if_else(Value %in% c(301:399), "Herb",
+                                                                                                                     "Other"))))))))))) %>%
+  mutate(height_m = if_else(type %in% "Tree", (Value -100),
+                            if_else(type %in% "Shrub", ((Value - 200) / 10),
+                                    if_else(type %in% "Herb", ((Value - 300) / 10), 0))) %>%
+           as.character() %>% as.numeric())
+
+# create bin breaks for grouping
+breaks <- c(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100)
+
+# create intervals for grouping and summarize
+# also create factor order for "type"
+evhgroup <- evhname %>%
+  mutate(interval = cut(height_m,
+                        breaks, 
+                        include.lowest = TRUE, 
+                        right = F,
+                        labels = c("0", "0.1-0.2", "0.2-0.3", "0.3-0.4" ,"0.4-0.5", "0.5-0.6", "0.6-0.7", "0.7-0.8", "0.8-0.9", "0.9-1.0", "1-5", "5-10", "10-15", "15-20", "20-25", "25-30", "30-35", "35-40", "40-45", "45-50", "50-55", "55-60", "60-65", "65-70", "70-75", "75-80", "80-85", "85-90", "90-95", "95-100")),
+         type = factor(type, levels = c("Tree", "Shrub", "Herb", "Open Water", "Snow / Ice", "Developed", "Agriculture", "Sparse Vegetation", "Barren", "Quarries", "Other"))) %>%
+  group_by(type, interval) %>%
+  summarise(COUNT = sum(Freq),
+            acres = sum(ACRES),
+            rel_percent = sum(REL_PERCENT))
+
+
+
+# add label and legend names based on condition
+evhgroup <- evhgroup %>% mutate(label = if_else(type %in% c("Tree", "Shrub", "Herb"),
+                                                paste0(type, " Height = ", interval, " m"), as.character(type)),
+                                legend = if_else(type %in% c("Tree", "Shrub", "Herb", "Open Water"),
+                                                 type, as.factor("Other")))
+# turn current label order to factors
+evhlabel.list <- evhgroup$label
+evhgroup <- evhgroup %>% mutate(label = fct_rev(factor(label, evhlabel.list)))
+
+
+# join in custom cols column to color bars by specific label
+
+evh_group_cols <- read.csv("inputs/evh_group_acc.csv")
+
+evhgroup <- left_join(evhgroup, evh_group_cols, by = "label")
+
+evhgroup$label <- factor(evhgroup$label, levels = rev(evhgroup$label))
+
+evhgroup <- evhgroup %>%
+  filter(rel_percent > 0.01)
+
+
+# plot
+evhChart <-
+ggplot(data = evhgroup, aes(x = label, y = acres, fill = colors)) +
+  geom_bar(stat = "identity") +
+  labs(
+    title = "Existing Vegetation Height",
+    subtitle = "",
+    caption = "\nData from landfire.gov",
+    x = "",
+    y = "Acres") +
+  scale_fill_identity() +
+  coord_flip() +
+  theme_classic(base_size = 14) +
+  scale_y_continuous(labels = comma)
+
+evhChart
+
+
+
+# plot with original color scheme
+# evhChart <-
+# ggplot(data = evhgroup, aes(x = label, y = REL_PERCENT, fill = legend)) +
+#   geom_bar(stat = "identity") +
+#   labs(
+#     title = "Existing Vegetation Height",
+#     subtitle = "landscape_name",
+#     caption = "Data from landfire.gov.",
+#     x = "",
+#     y = "percent of landscape") +
+#   scale_fill_manual(VALUEs = cols, name = "") +
+#   coord_flip() +
+#   theme_bw()
+# 
+# evhChart
+
+
+
+
+
+```

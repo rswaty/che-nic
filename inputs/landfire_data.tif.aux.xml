@@ -1,0 +1,139 @@
+<PAMDataset>
+  <Metadata>
+    <MDI key="Creator">USGS EROS Landfire Product Service</MDI>
+    <MDI key="DataType">Thematic</MDI>
+  </Metadata>
+  <Metadata domain="Esri">
+    <MDI key="PyramidResamplingType">NEAREST</MDI>
+  </Metadata>
+  <PAMRasterBand band="1">
+    <Description>LF2020_BPS_CONUS</Description>
+    <UnitOfMeasure>Class</UnitOfMeasure>
+    <Histograms>
+      <HistItem>
+        <HistMin>11</HistMin>
+        <HistMax>2726</HistMax>
+        <BucketCount>256</BucketCount>
+        <IncludeOutOfRange>1</IncludeOutOfRange>
+        <Approximate>0</Approximate>
+        <HistCounts>4909682|1440|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|22123442|3765304|11057388|5144681|1061495|5968172|3111859|2227235|18015|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|1606633|4849002</HistCounts>
+      </HistItem>
+    </Histograms>
+    <Metadata>
+      <MDI key="BandName">LF2020_BPS_CONUS</MDI>
+      <MDI key="RepresentationType">ATHEMATIC</MDI>
+      <MDI key="STATISTICS_COVARIANCES">312707.5682821398,-10661.40499317569,17432.08069336148,12658.12223753355,54060.22729113221</MDI>
+      <MDI key="STATISTICS_MAXIMUM">2726</MDI>
+      <MDI key="STATISTICS_MEAN">1577.17357057</MDI>
+      <MDI key="STATISTICS_MEDIAN">1576.117647</MDI>
+      <MDI key="STATISTICS_MINIMUM">11</MDI>
+      <MDI key="STATISTICS_SKIPFACTORX">1</MDI>
+      <MDI key="STATISTICS_SKIPFACTORY">1</MDI>
+      <MDI key="STATISTICS_STDDEV">559.20261827189</MDI>
+    </Metadata>
+  </PAMRasterBand>
+  <PAMRasterBand band="2">
+    <Description>LF2024_SClass_CONUS</Description>
+    <UnitOfMeasure>Class</UnitOfMeasure>
+    <Histograms>
+      <HistItem>
+        <HistMin>1</HistMin>
+        <HistMax>180</HistMax>
+        <BucketCount>256</BucketCount>
+        <IncludeOutOfRange>1</IncludeOutOfRange>
+        <Approximate>0</Approximate>
+        <HistCounts>583891|4268835|9145722|0|15686413|16484827|0|4170718|3474138|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|4909682|0|0|0|0|0|0|0|0|0|0|0|0|2629161|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|6653|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|4484308</HistCounts>
+      </HistItem>
+    </Histograms>
+    <Metadata>
+      <MDI key="BandName">LF2024_SClass_CONUS</MDI>
+      <MDI key="RepresentationType">ATHEMATIC</MDI>
+      <MDI key="STATISTICS_COVARIANCES">-10661.40499317569,2886.1993014905,-1716.539137591558,-911.0829080540088,-1785.288288415898</MDI>
+      <MDI key="STATISTICS_MAXIMUM">180</MDI>
+      <MDI key="STATISTICS_MEAN">28.849848220838</MDI>
+      <MDI key="STATISTICS_MEDIAN">4.509804</MDI>
+      <MDI key="STATISTICS_MINIMUM">1</MDI>
+      <MDI key="STATISTICS_SKIPFACTORX">1</MDI>
+      <MDI key="STATISTICS_SKIPFACTORY">1</MDI>
+      <MDI key="STATISTICS_STDDEV">53.723358992998</MDI>
+    </Metadata>
+  </PAMRasterBand>
+  <PAMRasterBand band="3">
+    <Description>LF2024_EVC_CONUS</Description>
+    <UnitOfMeasure>Class</UnitOfMeasure>
+    <Histograms>
+      <HistItem>
+        <HistMin>11</HistMin>
+        <HistMax>395</HistMax>
+        <BucketCount>256</BucketCount>
+        <IncludeOutOfRange>1</IncludeOutOfRange>
+        <Approximate>0</Approximate>
+        <HistCounts>4909682|487189|42277|84031|0|0|0|278330|34154|1703180|0|0|0|6653|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|630|125867|2815861|0|55295|19|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|2211|752|2220|1609|15265|2359|6228|4239|11878|8384|47478|18102|52493|37423|105395|71555|189411|184790|311488|193491|475192|606075|356889|933711|475713|1087472|612499|1374050|767101|1693726|1073519|1995852|1071266|2295235|1228085|2638069|1414925|3213959|1688553|3194749|1612135|3263567|1614570|3648124|1506228|2924587|1288755|2046206|852707|1184302|1365004|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|3480|1290|3645|2822|6075|3816|8721|5043|11348|6773|17180|10287|25505|14969|34591|19727|43541|23428|47044|21732|35087|13099|17954|6208|9873|4283|8330|3803|6914|3080|6049|2125|8792|3250|74|2|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|277|325|235|739|513|1449|1063|2980|2181|5692|4681|10043|6607|17390|11353|30258|19584|57475|33679|86298|54140|135011|81760|198673|113301|259452|151537|364321|217088|490045|414394|462115|184589|269892|93780|128964|42397|62178|19696|29391|9345|10444|2382|2832|40|3|3|1|1|0|0|0|0|0|0|0|0|1047</HistCounts>
+      </HistItem>
+    </Histograms>
+    <Metadata>
+      <MDI key="BandName">LF2024_EVC_CONUS</MDI>
+      <MDI key="RepresentationType">ATHEMATIC</MDI>
+      <MDI key="STATISTICS_COVARIANCES">17432.08069336148,-1716.539137591558,5281.947919415345,4273.507303172043,16936.92559318149</MDI>
+      <MDI key="STATISTICS_MAXIMUM">395</MDI>
+      <MDI key="STATISTICS_MEAN">155.57429509359</MDI>
+      <MDI key="STATISTICS_MEDIAN">164.600000</MDI>
+      <MDI key="STATISTICS_MINIMUM">11</MDI>
+      <MDI key="STATISTICS_SKIPFACTORX">1</MDI>
+      <MDI key="STATISTICS_SKIPFACTORY">1</MDI>
+      <MDI key="STATISTICS_STDDEV">72.677010941668</MDI>
+    </Metadata>
+  </PAMRasterBand>
+  <PAMRasterBand band="4">
+    <Description>LF2024_EVH_CONUS</Description>
+    <UnitOfMeasure>Class</UnitOfMeasure>
+    <Histograms>
+      <HistItem>
+        <HistMin>11</HistMin>
+        <HistMax>310</HistMax>
+        <BucketCount>256</BucketCount>
+        <IncludeOutOfRange>1</IncludeOutOfRange>
+        <Approximate>0</Approximate>
+        <HistCounts>4909682|338812|148377|42277|81016|3015|0|0|0|196432|81898|1737334|0|0|0|0|0|6653|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|630|0|125867|2143195|672666|0|55295|19|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|723|5175|20644|37458|69216|318488|347614|417661|545136|725345|2684633|2598246|4015313|5579151|7068265|7610677|11329195|3368700|2081516|1151700|794740|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|135|0|0|40283|13162|25333|15715|14701|22064|21644|58663|33938|28306|35029|27794|29628|35298|11465|14627|4770|4902|847|1601|35|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|211060|110858|541052|849318|1307806|660298|411252</HistCounts>
+      </HistItem>
+    </Histograms>
+    <Metadata>
+      <MDI key="BandName">LF2024_EVH_CONUS</MDI>
+      <MDI key="RepresentationType">ATHEMATIC</MDI>
+      <MDI key="STATISTICS_COVARIANCES">12658.12223753355,-911.0829080540088,4273.507303172043,3653.476613569727,18062.14192351356</MDI>
+      <MDI key="STATISTICS_MAXIMUM">310</MDI>
+      <MDI key="STATISTICS_MEAN">115.67708728773</MDI>
+      <MDI key="STATISTICS_MEDIAN">116.529412</MDI>
+      <MDI key="STATISTICS_MINIMUM">11</MDI>
+      <MDI key="STATISTICS_SKIPFACTORX">1</MDI>
+      <MDI key="STATISTICS_SKIPFACTORY">1</MDI>
+      <MDI key="STATISTICS_STDDEV">60.443995678394</MDI>
+    </Metadata>
+  </PAMRasterBand>
+  <PAMRasterBand band="5">
+    <Description>LF2024_EVT_CONUS</Description>
+    <UnitOfMeasure>Class</UnitOfMeasure>
+    <Histograms>
+      <HistItem>
+        <HistMin>7238</HistMin>
+        <HistMax>9817</HistMax>
+        <BucketCount>256</BucketCount>
+        <IncludeOutOfRange>1</IncludeOutOfRange>
+        <Approximate>0</Approximate>
+        <HistCounts>2642368|0|0|0|0|5227441|30197474|25512|0|0|0|0|2253581|0|0|268|42634|419|854|0|0|0|203|0|7812211|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|338812|274685|60820|210384|0|0|0|3079124|1405184|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|4402134|0|0|4041|2187335|1085|1829567|464923|0|0|0|0|5465|2680|0|7094|0|0|0|0|0|0|0|0|1552|0|1565727|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|329|225|160311|0|0|0|0|0|2699|0|0|0|0|0|0|0|0|0|0|0|0|0|1637207</HistCounts>
+      </HistItem>
+    </Histograms>
+    <Metadata>
+      <MDI key="BandName">LF2024_EVT_CONUS</MDI>
+      <MDI key="RepresentationType">ATHEMATIC</MDI>
+      <MDI key="STATISTICS_COVARIANCES">54060.22729113221,-1785.288288415898,16936.92559318149,18062.14192351356,548846.2232884307</MDI>
+      <MDI key="STATISTICS_MAXIMUM">9817</MDI>
+      <MDI key="STATISTICS_MEAN">7732.6798164953</MDI>
+      <MDI key="STATISTICS_MEDIAN">7298.682353</MDI>
+      <MDI key="STATISTICS_MINIMUM">7238</MDI>
+      <MDI key="STATISTICS_SKIPFACTORX">1</MDI>
+      <MDI key="STATISTICS_SKIPFACTORY">1</MDI>
+      <MDI key="STATISTICS_STDDEV">740.84156422843</MDI>
+    </Metadata>
+  </PAMRasterBand>
+</PAMDataset>

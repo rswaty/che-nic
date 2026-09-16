@@ -1,0 +1,78 @@
+---
+title: "About this Project"
+---
+
+## LANDFIRE & The Nature Conservancy 
+
+[LANDFIRE](https://landfire.gov){target="blank"} (Landscape Fire and Resource Management Planning Tools) is a shared program between the U.S. Department of Agriculture Forest Service Fire and Aviation branch and the U.S. Department of the Interior. LANDFIRE provides 25+ national landscape-scale geo-spatial products, 950 vegetation models, and a suite of tools that support all-lands planning, management, and operations. Included in the product suite are current and historic conditions including ecosystem dynamic models that can be used for conservation, fire planning, and landscape management decisions.   
+
+[The Nature Conservancy (TNC)](https://landfire.gov/faqs#heading-45){target="blank"} is a Major Partner in the LANDFIRE Program supported by a cooperative agreement through USDA Forest Service. TNC’s LANDFIRE Team works closely with the LANDFIRE Business Leads, program staff, and other partners to provide support to LANDFIRE and the user community by: 
+
+* Helping users understand the strengths, weaknesses, and appropriate uses of LANDFIRE products. 
+
+* Locating, obtaining, and using geospatial data, tools, and models for fire and natural resource management, planning, and implementation. 
+
+* Identifying and comparing management priorities, evaluating threats to ecosystems, and exploring outcomes under alternative management scenarios. 
+
+
+> TNC’s LANDFIRE Team is advancing conservation outcomes through collaborative ecosystem science by supporting LANDFIRE users as they locate, obtain and apply the diverse suite of LANDFIRE products and data.
+
+Created by TNC Ecologist, [Randy Swaty](mailto:rswaty@tnc.org), this preliminary landscape assessment leverages LANDFIRE’s unique geospatial products to advance beneficial outcomes for the wildland fire and natural resource communities. The central data in each project are created and managed by the cooperative inter-agency/inter-organizational [LANDFIRE program](https://landfire.gov){target="blank"}. 
+
+These charts, maps, and graphs are based on current LANDFIRE products, and provide a starting point for further analysis. All maps, input datasets and further assistance can be obtained by contacting the author, Randy Swaty.
+
+Substantial code contributions for GIS data processing by [Myles Walimaa.](https://www.linkedin.com/in/myles-walimaa-35596123b/){target="blank"}
+
+## Biophysical Settings Products
+
+A [Biophysical Setting (BpS)](https://landfire.gov/bps-models.php){target="blank"} is a concept that represents the vegetation that may have been dominant on the landscape prior to European colonization of North America and is based on both the current biophysical environment and an approximation of the historical disturbance regime.
+
+* LANDFIRE collaborated with experts around the country to create a description and model for every BpS in the US. Find BpS descriptions for your area [here.](https://landfirereview.org/search.php){target="blank"}
+
+* Check out the vegetation modeling [website](https://thenatureconservancy.github.io/landfiremodels/){target="blank"} to learn how to integrate BpS into your work.
+
+* Read [Blankenship et al. (2021)](https://esajournals.onlinelibrary.wiley.com/doi/pdf/10.1002/ecs2.3484){target="blank"} to learn how the models and descriptions were developed.
+
+<br>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/xjaWJCe7udQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen>
+
+</iframe>
+
+<br>
+
+## Vegetation Products
+
+[LANDFIRE (LF) existing vegetation layers](https://landfire.gov/vegetation.php){target="blank"} describe the following elements: Existing Vegetation Type (EVT), Existing Vegetation Canopy Cover (EVC), and Existing Vegetation Height (EVH). These layers are created using predictive landscape models based on extensive field-referenced data, satellite imagery and biophysical gradient layers using classification and regression trees. 
+
+#### Resources
+
+-   [Existing Vegetation Cover](https://landfire.gov/evc.php){target="blank"}
+-   [Existing Vegetation Height](https://landfire.gov/evh.php){target="blank"}
+-   [Existing Vegetation Type](https://landfire.gov/evt.php){target="blank"} 
+
+
+
+<br>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/Fzc_zS6EoJE?si=Z4idrvFqgCMK8IJZ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen>
+
+</iframe>
+
+<br>
+
+
+<h2>Questions? LANDFIRE is here to help</h2>
+
+* Get in touch with [TNC Ecologist, Randy Swaty,](mailto:rswaty@tnc.org) (Landscape assessment creator and TNC Ecologist)
+
+* Ask the [LANDFIRE Helpdesk](mailto:helpdesk@landfire.gov)
+
+* Search (& subscribe to) the [LANDFIRE YouTube Channel](https://www.youtube.com/@LANDFIREvideo) (see tutorials, Office Hours, quick demonstrations)
+
+* See how others are [putting LANDFIRE products to work](https://arcg.is/1jmKm90)
+
+* [Join the LANDFIRE Newsletter 2-min read](http://eepurl.com/cajG91)
+
+* Check out our other [LANDFIRE-Powered Assessments Hub](https://landfire-tnc.github.io/Assessments/)
+
