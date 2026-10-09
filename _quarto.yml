@@ -16,6 +16,8 @@ website:
         text: Present
       - href: departure.qmd
         text: Departure
+      - href: conifer.qmd
+        text: Conifers
       - href: about.qmd
         text: About
         

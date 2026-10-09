@@ -1,0 +1,19 @@
+definition,conifer_group,n_openings,acres
+Cover drop >= 50% (2016 to 2024),Jack pine barrens,77,2368
+Cover drop >= 50% (2016 to 2024),Northern hardwoods-hemlock,984,30446
+Cover drop >= 50% (2016 to 2024),Outside conifer BpS,217,5069
+Cover drop >= 50% (2016 to 2024),Pine (red/white),224,9274
+Cover drop >= 50% (2016 to 2024),Pine-hemlock-hardwood,97,3385
+Cover drop >= 50% (2016 to 2024),Spruce-fir,27,554
+"Disturbed 2021-2024, cover now < 50%",Jack pine barrens,103,4540
+"Disturbed 2021-2024, cover now < 50%",Northern hardwoods-hemlock,558,21286
+"Disturbed 2021-2024, cover now < 50%",Outside conifer BpS,41,447
+"Disturbed 2021-2024, cover now < 50%",Pine (red/white),195,10746
+"Disturbed 2021-2024, cover now < 50%",Pine-hemlock-hardwood,71,3192
+"Disturbed 2021-2024, cover now < 50%",Spruce-fir,20,438
+"Disturbed 2025, cover not yet updated",Jack pine barrens,49,3205
+"Disturbed 2025, cover not yet updated",Northern hardwoods-hemlock,349,18060
+"Disturbed 2025, cover not yet updated",Outside conifer BpS,15,244
+"Disturbed 2025, cover not yet updated",Pine (red/white),112,7307
+"Disturbed 2025, cover not yet updated",Pine-hemlock-hardwood,34,1058
+"Disturbed 2025, cover not yet updated",Spruce-fir,9,410

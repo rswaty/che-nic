@@ -1,0 +1,249 @@
+---
+title: "Conifer Ecosystems"
+---
+
+```{r}
+#| label: conifer set up
+#| message: false
+#| warning: false
+#| include: false
+
+# packages
+library(htmltools)
+library(knitr)
+library(leaflet)
+library(scales)
+library(sf)
+library(tidyverse)
+
+# smoothed conifer-associated BpS polygons from gis_conifer_bps_03.R
+conifer_polys <- st_read("outputs/conifer_bps_smooth.gpkg", quiet = TRUE) |>
+  st_transform(crs = 4326)
+
+conifer_summary <- read_csv("outputs/conifer_bps_smooth_summary.csv", show_col_types = FALSE)
+
+shp <- st_read("inputs/cnnf.shp", quiet = TRUE) |>
+  st_transform(crs = 4326)
+
+# legend / layer order follows the summary (rarer conifer types first)
+group_order  <- conifer_summary$group
+group_colors <- conifer_polys |>
+  st_drop_geometry() |>
+  distinct(group, color) |>
+  deframe()
+group_colors <- group_colors[group_order]
+
+# canopy openings from gis_canopy_openings_04.R
+openings <- st_read("outputs/canopy_openings.gpkg", quiet = TRUE) |>
+  st_transform(crs = 4326)
+
+openings_summary <- read_csv("outputs/canopy_openings_summary.csv", show_col_types = FALSE)
+
+# vermillion and black are not used by the BpS palette
+opening_styles <- tribble(
+  ~definition,                             ~fill,     ~fill_opacity, ~dash, ~legend_color, ~show,
+  "Disturbed 2021-2024, cover now < 50%",  "#D55E00", 0.85,          NA,    "#D55E00",     TRUE,
+  "Disturbed 2025, cover not yet updated", "#D55E00", 0.30,          "4 3", "#F2CFB3",     TRUE,
+  "Cover drop >= 50% (2016 to 2024)",      "#000000", 0.55,          NA,    "#737373",     FALSE
+)
+```
+
+This page maps where conifer-associated ecosystems would be expected based on LANDFIRE's [Biophysical Settings](https://landfire.gov/bps.php){target="blank"} (BpS). It is intended as a starting point for discussing where conifer planting may be appropriate.
+
+-   **These are not maps of current conifers.** Biophysical Settings represent the vegetation that may have been dominant prior to Euro-American settlement, based on the physical environment and historical disturbance regimes.
+-   Polygons were generalized from 30 m LANDFIRE data so they read as natural-looking patches rather than pixels: each conifer group's share of the surrounding area was smoothed, and areas where that share is at least 40% were outlined. Patches smaller than 20 acres were removed.
+-   Where groups overlap after smoothing, the area is assigned to the rarer conifer type (spruce-fir first, Northern hardwoods-hemlock last), so every acre belongs to one group.
+-   Polygon edges include some neighboring ecosystems; on average about three-quarters of a polygon's area is mapped as one of its group's BpSs.
+
+### Canopy openings
+
+Canopy openings are drawn on top of the conifer polygons using LANDFIRE [Annual Disturbance](https://landfire.gov/disturbance/annualdisturbance){target="blank"} (2021–2025, all disturbance types) and [Forest Canopy Cover](https://landfire.gov/fuel/cc){target="blank"} (LF 2016 and LF 2024). Openings are limited to forest-capable Biophysical Settings (open water, barren, grassland and open shrub/herb wetlands are excluded), lightly smoothed, and must be at least 5 acres. Three definitions are shown so they can be compared:
+
+-   **Disturbed 2021–2024, cover now \< 50%** (solid vermillion): any LANDFIRE disturbance in the last four mapped years where LF 2024 canopy cover is below 50%. This is the primary layer.
+-   **Disturbed 2025, cover not yet updated** (light vermillion, dashed outline): 2025 disturbances. LANDFIRE canopy cover for 2025 is not yet available for this region, so these have not been checked for cover. Many are thinnings that may not open the canopy below 50%.
+-   **Cover drop ≥ 50% (2016 to 2024)** (dark gray, off by default): canopy cover in LF 2024 is less than half of LF 2016. Only about a third of this area overlaps a 2021–2025 disturbance; the rest reflects older (2017–2020) disturbances and differences in how LANDFIRE versions were produced, so treat it as a comparison layer rather than a map of recent change.
+
+## Conifer-associated Biophysical Settings and canopy openings map
+
+**Map tips:**
+
+-   Hover over a conifer polygon to see its BpS name and outline every polygon of the same conifer group. Hover over an opening to see its disturbance year, type and canopy cover.
+-   Use the layer control (top right) to switch basemaps (imagery is helpful for checking openings) and turn layers on or off.
+-   Colors are from a colorblind-safe palette (Okabe-Ito).
+
+```{r}
+#| label: conifer leaflet
+#| echo: false
+#| message: false
+#| warning: false
+
+bbox <- as.list(st_bbox(conifer_polys))
+
+m <- leaflet(width = "100%", height = "750px") |>
+  addProviderTiles(providers$Esri.WorldTopoMap,  group = "Topographic") |>
+  addProviderTiles(providers$Esri.WorldImagery,  group = "Imagery") |>
+  addProviderTiles(providers$CartoDB.Positron,   group = "Light gray") |>
+  fitBounds(bbox$xmin, bbox$ymin, bbox$xmax, bbox$ymax) |>
+  # panes stack bottom to top so openings always draw above conifer polygons
+  addMapPane("conifer_bps", zIndex = 410) |>
+  addMapPane("openings",    zIndex = 420) |>
+  addMapPane("boundary",    zIndex = 430)
+
+for (g in group_order) {
+  m <- m |>
+    addPolygons(
+      data         = filter(conifer_polys, group == g),
+      fillColor    = ~color,
+      fillOpacity  = 0.6,
+      color        = ~color,
+      weight       = 1,
+      opacity      = 1,
+      label        = ~bps_name,
+      labelOptions = labelOptions(
+        style = list("font-weight" = "normal", padding = "3px 8px"),
+        textsize = "14px", direction = "auto"
+      ),
+      options = pathOptions(pane = "conifer_bps"),
+      group   = g
+    )
+}
+
+openings <- openings |>
+  mutate(
+    label = case_when(
+      definition == "Cover drop >= 50% (2016 to 2024)" ~ sprintf(
+        "Cover %s%% (2016) to %s%% (2024)%s", cc_2016, cc_2024,
+        ifelse(is.na(dist_year), "", sprintf("; disturbed %s (%s)", dist_year, dist_type))
+      ),
+      definition == "Disturbed 2025, cover not yet updated" ~ sprintf(
+        "Disturbed 2025 (%s)", dist_type
+      ),
+      TRUE ~ sprintf("Disturbed %s (%s); cover now %s%%", dist_year, dist_type, cc_2024)
+    )
+  )
+
+for (i in seq_len(nrow(opening_styles))) {
+  s <- opening_styles[i, ]
+  m <- m |>
+    addPolygons(
+      data         = filter(openings, definition == s$definition),
+      fillColor    = s$fill,
+      fillOpacity  = s$fill_opacity,
+      color        = "#000000",
+      weight       = 1,
+      opacity      = 1,
+      dashArray    = if (is.na(s$dash)) NULL else s$dash,
+      label        = ~label,
+      labelOptions = labelOptions(
+        style = list("font-weight" = "normal", padding = "3px 8px"),
+        textsize = "14px", direction = "auto"
+      ),
+      options = pathOptions(pane = "openings"),
+      group   = s$definition
+    )
+}
+
+m |>
+  addPolylines(
+    data    = shp,
+    color   = "#333333",
+    weight  = 2,
+    opacity = 1,
+    options = pathOptions(pane = "boundary"),
+    group   = "Forest boundary"
+  ) |>
+  addLegend(
+    position = "bottomright",
+    colors   = unname(group_colors),
+    labels   = names(group_colors),
+    title    = "Conifer-associated BpS",
+    opacity  = 0.8
+  ) |>
+  addLegend(
+    position = "topleft",
+    colors   = opening_styles$legend_color,
+    labels   = opening_styles$definition,
+    title    = "Canopy openings",
+    opacity  = 1
+  ) |>
+  addScaleBar(position = "bottomleft") |>
+  addLayersControl(
+    baseGroups    = c("Topographic", "Imagery", "Light gray"),
+    overlayGroups = c(group_order, opening_styles$definition, "Forest boundary"),
+    options       = layersControlOptions(collapsed = FALSE)
+  ) |>
+  hideGroup(opening_styles$definition[!opening_styles$show]) |>
+  # hovering one polygon outlines every polygon in its layer group
+  htmlwidgets::onRender("
+    function(el, x, data) {
+      var map = this;
+      data.groups.forEach(function(g) {
+        var lg = map.layerManager.getLayerGroup(g);
+        if (!lg) return;
+        lg.eachLayer(function(layer) {
+          layer.on('mouseover', function() {
+            lg.eachLayer(function(l) {
+              l.setStyle({color: '#000000', weight: 2.5, fillOpacity: 0.75});
+            });
+          });
+          layer.on('mouseout', function() {
+            lg.eachLayer(function(l) {
+              l.setStyle({color: l.options.fillColor, weight: 1, fillOpacity: 0.6});
+            });
+          });
+        });
+      });
+    }",
+    data = list(groups = group_order)
+  )
+```
+
+<br>
+
+### Acres by conifer group
+
+*Mapped acres* are the acres inside the smoothed polygons; *BpS acres* are the acres of 30 m pixels mapped as that group's BpSs. Values above 100% mean the smoothed polygons absorbed neighboring pixels; values below 100% mean small or scattered patches were dropped (spruce-fir in particular occurs as small, scattered patches).
+
+```{r}
+#| label: conifer acres table
+#| echo: false
+#| message: false
+#| warning: false
+
+conifer_summary |>
+  transmute(
+    `Conifer group`      = group,
+    `Polygons`           = comma(n_polys),
+    `Mapped acres`       = comma(smoothed_acres),
+    `BpS acres`          = comma(raw_acres),
+    `Mapped / BpS acres` = paste0(pct_retained, "%")
+  ) |>
+  kable(align = "lrrrr")
+```
+
+<br>
+
+### Canopy opening acres by conifer group
+
+Acres of smoothed opening polygons (5 acres or larger), assigned to the conifer group they overlap most. Openings that do not overlap a conifer polygon are listed as *Outside conifer BpS*.
+
+```{r}
+#| label: openings acres table
+#| echo: false
+#| message: false
+#| warning: false
+
+openings_summary |>
+  select(definition, conifer_group, acres) |>
+  mutate(
+    conifer_group = factor(conifer_group, levels = c(group_order, "Outside conifer BpS")),
+    definition    = factor(definition, levels = opening_styles$definition)
+  ) |>
+  arrange(definition) |>
+  pivot_wider(names_from = definition, values_from = acres, values_fill = 0) |>
+  arrange(conifer_group) |>
+  janitor::adorn_totals("row") |>
+  mutate(across(-conifer_group, comma)) |>
+  rename(`Conifer group` = conifer_group) |>
+  kable(align = "lrrr")
+```
