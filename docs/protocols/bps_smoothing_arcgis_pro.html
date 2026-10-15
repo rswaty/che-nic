@@ -172,17 +172,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#settings" id="toc-settings" class="nav-link" data-scroll-target="#settings">Settings</a></li>
   <li><a href="#before-you-start-define-groups" id="toc-before-you-start-define-groups" class="nav-link" data-scroll-target="#before-you-start-define-groups">Before you start: define groups</a></li>
   <li><a href="#requirements" id="toc-requirements" class="nav-link" data-scroll-target="#requirements">Requirements</a></li>
-  <li><a href="#environment-settings" id="toc-environment-settings" class="nav-link" data-scroll-target="#environment-settings">Environment settings</a></li>
+  <li><a href="#set-up-the-project" id="toc-set-up-the-project" class="nav-link" data-scroll-target="#set-up-the-project">Set up the project</a>
+  <ul class="collapse">
+  <li><a href="#running-tools" id="toc-running-tools" class="nav-link" data-scroll-target="#running-tools">Running tools</a></li>
+  </ul></li>
   <li><a href="#step-by-step" id="toc-step-by-step" class="nav-link" data-scroll-target="#step-by-step">Step-by-step</a>
   <ul class="collapse">
   <li><a href="#make-a-bps_code-raster" id="toc-make-a-bps_code-raster" class="nav-link" data-scroll-target="#make-a-bps_code-raster">1. Make a BPS_CODE raster</a></li>
   <li><a href="#make-a-10-raster-for-the-group" id="toc-make-a-10-raster-for-the-group" class="nav-link" data-scroll-target="#make-a-10-raster-for-the-group">2. Make a 1/0 raster for the group</a></li>
   <li><a href="#aggregate-and-fill-nodata-with-0" id="toc-aggregate-and-fill-nodata-with-0" class="nav-link" data-scroll-target="#aggregate-and-fill-nodata-with-0">3. Aggregate and fill NoData with 0</a></li>
-  <li><a href="#gaussian-blur" id="toc-gaussian-blur" class="nav-link" data-scroll-target="#gaussian-blur">4. Gaussian blur</a></li>
+  <li><a href="#blur" id="toc-blur" class="nav-link" data-scroll-target="#blur">4. Blur</a></li>
   <li><a href="#contour-and-keep-the-area-above-the-level" id="toc-contour-and-keep-the-area-above-the-level" class="nav-link" data-scroll-target="#contour-and-keep-the-area-above-the-level">5. Contour and keep the area above the level</a></li>
   <li><a href="#fill-small-holes" id="toc-fill-small-holes" class="nav-link" data-scroll-target="#fill-small-holes">6. Fill small holes</a></li>
   <li><a href="#clip-to-the-area-of-interest" id="toc-clip-to-the-area-of-interest" class="nav-link" data-scroll-target="#clip-to-the-area-of-interest">7. Clip to the area of interest</a></li>
-  <li><a href="#simplify" id="toc-simplify" class="nav-link" data-scroll-target="#simplify">8. Simplify</a></li>
+  <li><a href="#simplify-and-label" id="toc-simplify-and-label" class="nav-link" data-scroll-target="#simplify-and-label">8. Simplify and label</a></li>
   <li><a href="#resolve-overlaps-by-priority" id="toc-resolve-overlaps-by-priority" class="nav-link" data-scroll-target="#resolve-overlaps-by-priority">9. Resolve overlaps by priority</a></li>
   <li><a href="#combine-and-drop-small-polygons" id="toc-combine-and-drop-small-polygons" class="nav-link" data-scroll-target="#combine-and-drop-small-polygons">10. Combine and drop small polygons</a></li>
   <li><a href="#optional-main-bps-and-purity-per-polygon" id="toc-optional-main-bps-and-purity-per-polygon" class="nav-link" data-scroll-target="#optional-main-bps-and-purity-per-polygon">11. Optional: main BpS and purity per polygon</a></li>
@@ -190,8 +193,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </ul></li>
   <li><a href="#quality-checks" id="toc-quality-checks" class="nav-link" data-scroll-target="#quality-checks">Quality checks</a></li>
   <li><a href="#tuning" id="toc-tuning" class="nav-link" data-scroll-target="#tuning">Tuning</a></li>
-  <li><a href="#making-a-kernel-file" id="toc-making-a-kernel-file" class="nav-link" data-scroll-target="#making-a-kernel-file">Making a kernel file</a></li>
   <li><a href="#caveats" id="toc-caveats" class="nav-link" data-scroll-target="#caveats">Caveats</a></li>
+  <li><a href="#learn-more" id="toc-learn-more" class="nav-link" data-scroll-target="#learn-more">Learn more</a>
+  <ul class="collapse">
+  <li><a href="#landfire-and-biophysical-settings" id="toc-landfire-and-biophysical-settings" class="nav-link" data-scroll-target="#landfire-and-biophysical-settings">LANDFIRE and Biophysical Settings</a></li>
+  <li><a href="#concepts-behind-each-step" id="toc-concepts-behind-each-step" class="nav-link" data-scroll-target="#concepts-behind-each-step">Concepts behind each step</a></li>
+  <li><a href="#key-papers" id="toc-key-papers" class="nav-link" data-scroll-target="#key-papers">Key papers</a></li>
+  <li><a href="#learning-gis" id="toc-learning-gis" class="nav-link" data-scroll-target="#learning-gis">Learning GIS</a></li>
+  <li><a href="#the-same-workflow-in-r" id="toc-the-same-workflow-in-r" class="nav-link" data-scroll-target="#the-same-workflow-in-r">The same workflow in R</a></li>
+  </ul></li>
   </ul></li>
   </ul>
 </nav>
@@ -207,14 +217,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>A protocol for turning a 30 m LANDFIRE Biophysical Settings (BpS) raster into rounded, natural-looking polygons for one or more groups of BpSs, for any area of interest. The same steps work for any categorical raster (e.g., Existing Vegetation Type) by swapping the field used to define groups.</p>
 <section id="why-not-just-raster-to-polygon" class="level2">
 <h2 class="anchored" data-anchor-id="why-not-just-raster-to-polygon">Why not just Raster to Polygon?</h2>
-<p>Converting a classified raster directly to polygons traces pixel edges, so polygons come out stair-stepped, with thousands of tiny slivers. Smoothing the polygons afterwards (e.g., Smooth Polygon) softens corners but keeps every speck. This protocol smooths the <em>raster</em> first, then contours it:</p>
+<p>Converting a classified raster directly to polygons (<a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/conversion/raster-to-polygon.htm">Raster to Polygon</a>) traces pixel edges, so polygons come out stair-stepped, with thousands of tiny slivers. Smoothing the polygons afterwards (<a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/cartography/smooth-polygon.htm">Smooth Polygon</a>) softens corners but keeps every speck. This protocol smooths the <em>raster</em> first, then contours it:</p>
 <ol type="1">
 <li>For each group, make a 1/0 raster (1 = pixel belongs to the group).</li>
 <li>Average it to a coarser cell size, so each cell holds the group’s share of that cell.</li>
-<li>Blur that share with a Gaussian kernel, so each cell holds the group’s share of its <em>neighborhood</em>.</li>
+<li>Blur that share with a moving-window average, so each cell holds the group’s share of its <em>neighborhood</em>.</li>
 <li>Draw the contour at a chosen share (e.g., 40%), and keep the area above it.</li>
 </ol>
-<p>Contour lines are interpolated between cell centers, so the polygons are naturally rounded. The blur width (sigma) controls how much detail is kept; the contour level controls how inclusive the polygons are.</p>
+<p>Contour lines are interpolated between cell centers, so the polygons are naturally rounded. The amount of blur controls how much detail is kept; the contour level controls how inclusive the polygons are.</p>
+<p>This is a form of <strong>cartographic generalization</strong>: deliberately simplifying a map to suit its scale and purpose. In effect, step 3 is a moving-window <em>proportion</em> of the group (the same idea as a kernel density surface), and step 4 traces an <em>isoline</em> of that surface, much like drawing an elevation contour on a DEM. See <a href="#learn-more">Learn more</a> for background on each piece.</p>
 </section>
 <section id="settings" class="level2">
 <h2 class="anchored" data-anchor-id="settings">Settings</h2>
@@ -239,9 +250,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>Speeds processing; each cell = share of group</td>
 </tr>
 <tr class="even">
-<td>Gaussian sigma</td>
-<td>100 m (7 × 7 kernel at 90 m)</td>
-<td>Larger = rounder, less detail</td>
+<td>Blur</td>
+<td>3 × 3 cell mean, one pass</td>
+<td>More passes = rounder, less detail</td>
 </tr>
 <tr class="odd">
 <td>Contour level</td>
@@ -271,11 +282,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Decide which BpSs to map and how to group them. A group can be a single BpS or several related ones (e.g., all spruce-fir variants). For each group, record:</p>
 <ul>
 <li><strong>Group name</strong></li>
-<li><strong>BPS_CODE values</strong> in the group. Use <code>BPS_CODE</code>, not the raster <code>VALUE</code>: one BpS code can have several raster values (map zone variants), and the group should include all of them. Look the codes up in the raster attribute table or by filtering on <code>BPS_NAME</code> or <code>GROUPVEG</code>.</li>
-<li><strong>Priority</strong>, if mapping more than one group. Groups are smoothed independently, so their edges can overlap; overlaps go to the higher-priority group. Putting rarer or more important groups first keeps them from being swallowed by widespread neighbors.</li>
-<li><strong>Color.</strong> The colorblind-safe Okabe-Ito palette works well: #0072B2, #F0E442, #56B4E9, #009E73, #CC79A7, #E69F00, #D55E00, #000000. Leave a few colors unused if other layers will be drawn on top.</li>
+<li><strong>BPS_CODE values</strong> in the group. Use <code>BPS_CODE</code>, not the raster <code>VALUE</code>: one BpS code can have several raster values (map zone variants), and the group should include all of them. Step 2 explains how to find the codes. Read the <a href="https://landfire.gov/vegetation/bps-models">BpS model descriptions</a> to decide which BpSs belong together.</li>
+<li><strong>Priority</strong>, if mapping more than one group. Groups are smoothed independently, so their edges can overlap; overlaps go to the higher-priority group (step 9). Putting rarer or more important groups first keeps them from being swallowed by widespread neighbors.</li>
+<li><strong>Color.</strong> The colorblind-safe <a href="https://jfly.uni-koeln.de/color/">Okabe-Ito palette</a> works well: #0072B2, #F0E442, #56B4E9, #009E73, #CC79A7, #E69F00, #D55E00, #000000. Leave a few colors unused if other layers will be drawn on top.</li>
 </ul>
-<p>A worksheet like this keeps things straight:</p>
+<p>A worksheet like this keeps things straight. Number the groups by priority; that number (<code>g1</code>, <code>g2</code>, …) is used in every output name.</p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -310,254 +321,460 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="requirements" class="level2">
 <h2 class="anchored" data-anchor-id="requirements">Requirements</h2>
 <ul>
-<li>ArcGIS Pro with the <strong>Spatial Analyst</strong> extension (Aggregate, Focal Statistics, Contour, Lookup).</li>
-<li>A BpS raster covering the area of interest, with its attribute table (<code>BPS_CODE</code> field). Download from <a href="https://landfire.gov">landfire.gov</a> and clip to a bit beyond your boundary.</li>
+<li>ArcGIS Pro with the <a href="https://pro.arcgis.com/en/pro-app/latest/help/analysis/spatial-analyst/basics/what-is-the-spatial-analyst-extension.htm">Spatial Analyst</a> extension (Aggregate, Focal Statistics, Contour, Lookup, Tabulate Area).</li>
+<li>A BpS raster covering the area of interest, with its attribute table (<code>BPS_CODE</code> field). Download from <a href="https://landfire.gov">landfire.gov</a> (e.g., via the <a href="https://www.landfire.gov/viewer/">LANDFIRE viewer</a>).</li>
 <li>An area-of-interest boundary polygon.</li>
-<li>A Gaussian kernel file. <code>gauss_kernel_90m_sigma100.txt</code> (in this folder) matches the starting settings. For other settings, generate one with the script in <a href="#making-a-kernel-file">Making a kernel file</a>.</li>
 </ul>
 </section>
-<section id="environment-settings" class="level2">
-<h2 class="anchored" data-anchor-id="environment-settings">Environment settings</h2>
-<p>Set these once for the project (<strong>Analysis &gt; Environments</strong>) before running any tools:</p>
+<section id="set-up-the-project" class="level2">
+<h2 class="anchored" data-anchor-id="set-up-the-project">Set up the project</h2>
+<ol type="1">
+<li><strong>Create a project.</strong> Open ArcGIS Pro and start a new project from the <strong>Map</strong> template. Pro creates a project file geodatabase (<code>YourProject.gdb</code>). Save every output there unless told otherwise; geodatabases handle long field names and large polygons better than shapefiles.</li>
+<li><strong>Add data.</strong> On the <strong>Map</strong> tab, click <strong>Add Data</strong> and add the BpS raster and the boundary polygon.</li>
+<li><strong>Check the BpS attribute table.</strong> In the <strong>Contents</strong> pane, right-click the BpS raster and choose <strong>Attribute Table</strong>. You should see <code>VALUE</code>, <code>BPS_CODE</code>, <code>BPS_NAME</code> and other fields. If only <code>VALUE</code> and <code>COUNT</code> are present, the attributes were lost (this can happen after clipping). Use <a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/data-management/join-field.htm">Join Field</a> to bring them back from the CSV attribute table that comes with the LANDFIRE download, joining on <code>VALUE</code>.</li>
+<li><strong>Trim the raster if it is much larger than your area.</strong> If the BpS raster covers a whole region or the country, use <strong>Clip Raster</strong> to cut it to your boundary’s extent plus a buffer of about 1 km. The buffer lets polygons at the edge “see” real neighbors during the blur; the polygons are clipped to the exact boundary later (step 7).</li>
+<li><strong>Set environments.</strong> On the <strong>Analysis</strong> tab, click <strong>Environments</strong> and set:
 <ul>
-<li><strong>Output Coordinate System:</strong> a projected system in meters. The LANDFIRE native projection (NAD 1983 Contiguous USA Albers, EPSG 5070, for CONUS) is a good choice. Avoid geographic (degrees) coordinates.</li>
+<li><a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/environment-settings/output-coordinate-system.htm">Output Coordinate System</a>: a projected system in meters. Choosing <strong>Same as Input</strong> with the BpS raster’s projection (NAD 1983 Contiguous USA Albers, EPSG 5070, for CONUS LANDFIRE) works. Avoid geographic (degrees) coordinates; areas and distances would be wrong.</li>
 <li><strong>Processing Extent:</strong> same as the BpS raster.</li>
-<li><strong>Snap Raster:</strong> the BpS raster.</li>
+<li><a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/environment-settings/snap-raster.htm">Snap Raster</a>: the BpS raster. This keeps every raster output aligned to the same grid.</li>
 <li>Leave <strong>Mask</strong> empty. Cells outside the boundary need to be 0, not NoData, for the blur (handled in step 3).</li>
 </ul>
+See <a href="https://pro.arcgis.com/en/pro-app/latest/help/analysis/geoprocessing/basics/geoprocessing-environment-settings.htm">Geoprocessing environment settings</a> for details.</li>
+</ol>
+<section id="running-tools" class="level3">
+<h3 class="anchored" data-anchor-id="running-tools">Running tools</h3>
+<ul>
+<li><strong>Open a tool:</strong> on the <strong>Analysis</strong> tab, click <strong>Tools</strong>. In the <strong>Geoprocessing</strong> pane, search for the tool by name, fill in the parameters and click <strong>Run</strong>.</li>
+<li><strong>Check results:</strong> a green banner means success. Click <strong>View Details</strong> to see warnings; some are harmless, but read them.</li>
+<li><strong>Rerun with different inputs:</strong> on the <strong>Analysis</strong> tab, click <strong>History</strong>. Double-click a previous run to reopen the tool with the same settings, then change the inputs and output names. This is the fastest way to repeat steps 2–8 for each group (<a href="https://pro.arcgis.com/en/pro-app/latest/help/analysis/geoprocessing/basics/geoprocessing-history.htm">Geoprocessing history</a>).</li>
+<li><strong>Automating:</strong> steps 2–8 can be chained in <a href="https://pro.arcgis.com/en/pro-app/latest/help/analysis/geoprocessing/modelbuilder/what-is-modelbuilder-.htm">ModelBuilder</a>, with the group codes and name as model parameters. Steps 9 and 11 include Python you can paste into the <a href="https://pro.arcgis.com/en/pro-app/latest/arcpy/get-started/python-window.htm">Python window</a> (<strong>Analysis</strong> tab &gt; <strong>Python</strong> &gt; <strong>Python Window</strong>).</li>
+</ul>
+</section>
 </section>
 <section id="step-by-step" class="level2">
 <h2 class="anchored" data-anchor-id="step-by-step">Step-by-step</h2>
-<p>Steps 2–8 are run once per group. Names below use <code>gX</code> for the group number.</p>
+<p>Steps 2–8 are run once per group. Names below use <code>gX</code> for the group’s priority number (<code>g1</code>, <code>g2</code>, …), so <code>gX_mask</code> means <code>g1_mask</code> for the first group, <code>g2_mask</code> for the second, and so on.</p>
 <section id="make-a-bps_code-raster" class="level3">
 <h3 class="anchored" data-anchor-id="make-a-bps_code-raster">1. Make a BPS_CODE raster</h3>
-<p><strong>Lookup</strong> (Spatial Analyst)</p>
+<p>The BpS raster’s cell values are <code>VALUE</code> codes; we want cells to hold <code>BPS_CODE</code> instead, so a group can be selected by code.</p>
+<p><a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/spatial-analyst/lookup.htm">Lookup</a> (Spatial Analyst)</p>
 <ul>
 <li>Input raster: BpS raster</li>
 <li>Lookup field: <code>BPS_CODE</code></li>
-<li>Output: <code>bps_code</code></li>
+<li>Output raster: <code>bps_code</code></li>
 </ul>
+<p><strong>Check:</strong> click a few cells with the <strong>Explore</strong> tool. The pop-up value should be a 5-digit code (e.g., 13022) that matches <code>BPS_CODE</code> for that pixel in the BpS raster.</p>
 </section>
 <section id="make-a-10-raster-for-the-group" class="level3">
 <h3 class="anchored" data-anchor-id="make-a-10-raster-for-the-group">2. Make a 1/0 raster for the group</h3>
-<p><strong>Raster Calculator</strong> (Spatial Analyst):</p>
-<pre><code>Con(InList("bps_code", [code1, code2, code3]), 1, 0)</code></pre>
+<p><strong>Find the group’s codes.</strong></p>
+<ol type="1">
+<li>Open the BpS raster’s attribute table.</li>
+<li>Click <strong>Select By Attributes</strong> and build a query on <code>BPS_NAME</code>, e.g., <code>BPS_NAME</code> <em>contains the text</em> <code>Spruce</code>.</li>
+<li>Note the distinct <code>BPS_CODE</code> values among the selected rows. Several rows may share one code; list each code once.</li>
+<li>Record the codes in your worksheet.</li>
+</ol>
+<p><strong>Make the mask</strong> with <a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/spatial-analyst/raster-calculator.htm">Raster Calculator</a> (Spatial Analyst), using <a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/spatial-analyst/con-.htm">Con</a> and <a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/spatial-analyst/inlist.htm">InList</a>. Double-click <code>bps_code</code> in the <strong>Rasters</strong> list to insert it, then type the rest:</p>
+<pre><code>Con(InList("bps_code", [13651, 13652, 13653]), 1, 0)</code></pre>
+<p>Replace the codes with your group’s codes.</p>
 <ul>
-<li>Output: <code>gX_mask</code></li>
+<li>Output raster: <code>gX_mask</code></li>
 </ul>
 <p>Cells outside the BpS raster’s data area stay NoData; that is expected.</p>
-<p>If <code>InList</code> is unavailable in your version, use <code>Con(("bps_code" == code1) | ("bps_code" == code2), 1, 0)</code>, or <strong>Reclassify</strong> the group’s codes to 1 and all other codes to 0.</p>
+<p>If <code>InList</code> is unavailable in your version, use <code>Con(("bps_code" == 13651) | ("bps_code" == 13652), 1, 0)</code>, or <a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/spatial-analyst/reclassify.htm">Reclassify</a> the group’s codes to 1 and all other codes to 0.</p>
+<p><strong>Check:</strong> symbolize <code>gX_mask</code> with <strong>Unique Values</strong> (1 in a bright color, 0 with no color). The 1s should match the group’s pixels in the BpS raster.</p>
 </section>
 <section id="aggregate-and-fill-nodata-with-0" class="level3">
 <h3 class="anchored" data-anchor-id="aggregate-and-fill-nodata-with-0">3. Aggregate and fill NoData with 0</h3>
-<p><strong>Aggregate</strong> (Spatial Analyst)</p>
+<p>Aggregating converts 1/0 pixels into a share. For example, a 90 m cell containing 4 group pixels out of 9 gets a value of 0.44.</p>
+<p><a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/spatial-analyst/aggregate.htm">Aggregate</a> (Spatial Analyst; see <a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/spatial-analyst/how-aggregate-works.htm">How Aggregate works</a>)</p>
 <ul>
-<li>Input: <code>gX_mask</code></li>
+<li>Input raster: <code>gX_mask</code></li>
+<li>Output raster: <code>gX_share</code></li>
 <li>Cell factor: <code>3</code></li>
 <li>Aggregation technique: <code>Mean</code></li>
 <li>Expand extent if needed: checked</li>
 <li>Ignore NoData in calculations: <strong>checked</strong> (cells at the edge average only their valid pixels)</li>
-<li>Output: <code>gX_share</code></li>
 </ul>
 <p>Then <strong>Raster Calculator</strong>:</p>
 <pre><code>Con(IsNull("gX_share"), 0, "gX_share")</code></pre>
 <ul>
-<li>Output: <code>gX_sharez</code></li>
+<li>Output raster: <code>gX_sharez</code></li>
 </ul>
-<p>The output is floating point, 0 to 1.</p>
+<p><strong>Check:</strong> the output is floating point, ranging from 0 to 1, with a 90 m cell size (<strong>Properties</strong> &gt; <strong>Source</strong> &gt; <strong>Raster Information</strong>).</p>
 </section>
-<section id="gaussian-blur" class="level3">
-<h3 class="anchored" data-anchor-id="gaussian-blur">4. Gaussian blur</h3>
-<p><strong>Focal Statistics</strong> (Spatial Analyst)</p>
+<section id="blur" class="level3">
+<h3 class="anchored" data-anchor-id="blur">4. Blur</h3>
+<p>Each cell gets the average of itself and its 8 neighbors, so it now holds the group’s share of a 270 m × 270 m neighborhood.</p>
+<p><a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/spatial-analyst/focal-statistics.htm">Focal Statistics</a> (Spatial Analyst; see <a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/spatial-analyst/how-focal-statistics-works.htm">How Focal Statistics works</a>)</p>
 <ul>
-<li>Input: <code>gX_sharez</code></li>
-<li>Neighborhood: <code>Weight</code>, Kernel file: your Gaussian kernel file</li>
-<li>Statistics type: <strong>Sum</strong></li>
-<li>Ignore NoData: checked</li>
-<li>Output: <code>gX_smooth</code></li>
+<li>Input raster: <code>gX_sharez</code></li>
+<li>Output raster: <code>gX_smooth</code></li>
+<li>Neighborhood: <code>Rectangle</code></li>
+<li>Height: <code>3</code>, Width: <code>3</code>, Units type: <code>Cell</code></li>
+<li>Statistics type: <strong>Mean</strong></li>
+<li>Ignore NoData in calculations: checked</li>
 </ul>
-<p>The kernel weights sum to 1, so <strong>Sum</strong> yields a weighted average (the neighborhood share). Do not use <strong>Mean</strong>: with a weight kernel it divides again by the cell count and shrinks all values.</p>
-<p>The kernel must be built for the cell size of <code>gX_sharez</code> (90 m with the starting settings).</p>
+<p><strong>Check:</strong> values still range from 0 to 1, and the surface looks like a soft-focus version of <code>gX_sharez</code>.</p>
+<p><strong>Optional: extra passes.</strong> For rounder, simpler polygons, run Focal Statistics again with the same settings on <code>gX_smooth</code>, then contour that output instead. Each pass blurs a little more. Repeated averaging approaches a Gaussian blur; with 90 m cells, one pass blurs by about 73 m, two passes by about 104 m and three by about 127 m. One pass works well for most uses. When tested on a 1.5 million acre forest, two passes cut the polygon count by about 20% and changed total acres by less than 1%.</p>
 </section>
 <section id="contour-and-keep-the-area-above-the-level" class="level3">
 <h3 class="anchored" data-anchor-id="contour-and-keep-the-area-above-the-level">5. Contour and keep the area above the level</h3>
-<p><strong>Contour</strong> (Spatial Analyst)</p>
+<p><a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/spatial-analyst/contour.htm">Contour</a> (Spatial Analyst; see <a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/spatial-analyst/how-contouring-works.htm">How Contouring works</a>)</p>
 <ul>
-<li>Input: <code>gX_smooth</code></li>
-<li>Contour interval: <code>1</code></li>
-<li>Base contour: your contour level (e.g., <code>0.4</code>)</li>
-<li>Contour type: <strong>Contour shell up</strong> (polygons of the area at or above each contour value)</li>
-<li>Output: <code>gX_contour</code></li>
+<li>Input raster: <code>gX_smooth</code></li>
+<li>Output feature class: <code>gX_bands</code></li>
+<li>Contour interval: your contour level (e.g., <code>0.4</code>)</li>
+<li>Base contour: <code>0</code></li>
+<li>Contour type: <strong>Contour polygon</strong></li>
 </ul>
-<p>With interval 1, the only contour within the 0–1 range is the base level, so the output is the area where the neighborhood share is at least that level.</p>
-<p>Check: overlay the output on <code>gX_smooth</code> symbolized with a break at the contour level. Polygons should cover the cells at or above it. If they cover the area <em>below</em> it instead, use <strong>Contour polygon</strong> with the contour level as the interval and base 0. Then keep only polygons whose minimum contour value is at or above the level, and <strong>Dissolve</strong> them.</p>
+<p>The output is a set of non-overlapping bands: 0–0.4, 0.4–0.8 and 0.8 up to the maximum. Setting the interval equal to the level guarantees a band boundary exactly at the level.</p>
+<p><strong>Keep the bands at or above the level:</strong></p>
+<ol type="1">
+<li>Open the attribute table of <code>gX_bands</code>. It has fields holding each band’s lower and upper contour values; field names vary by Pro version.</li>
+<li><a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/data-management/select-layer-by-attribute.htm">Select Layer By Attribute</a>: new selection, where the lower-value field is greater than or equal to <code>0.399</code>. The 0.399 allows for values stored as 0.39999999.</li>
+<li><a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/analysis/pairwise-dissolve.htm">Pairwise Dissolve</a> with the selection active (only selected features are used):
+<ul>
+<li>Input features: <code>gX_bands</code></li>
+<li>Output feature class: <code>gX_contour</code></li>
+<li>Dissolve fields: none</li>
+<li>Create multipart features: checked</li>
+</ul>
+This merges the selected bands into one feature: everywhere the neighborhood share is at least the level.</li>
+</ol>
+<p>Alternative: <strong>Contour shell up</strong> returns overlapping “shells”, each running from a contour value up to the raster maximum. Keep the shell whose lower value equals your level, and delete the rest.</p>
+<p><strong>Check:</strong> symbolize <code>gX_smooth</code> with two classes, breaking at the contour level, and overlay <code>gX_contour</code> as a hollow outline. The outline should trace the class break, with the high class inside.</p>
 </section>
 <section id="fill-small-holes" class="level3">
 <h3 class="anchored" data-anchor-id="fill-small-holes">6. Fill small holes</h3>
-<p><strong>Eliminate Polygon Part</strong> (Data Management)</p>
+<p><a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/data-management/eliminate-polygon-part.htm">Eliminate Polygon Part</a> (Data Management)</p>
 <ul>
-<li>Input: <code>gX_contour</code></li>
+<li>Input features: <code>gX_contour</code></li>
+<li>Output feature class: <code>gX_filled</code></li>
 <li>Condition: <code>Area</code></li>
 <li>Area: e.g., <code>40 Acres</code></li>
-<li>Eliminate contained parts only: <strong>checked</strong> (removes holes only)</li>
-<li>Output: <code>gX_filled</code></li>
+<li>Eliminate contained parts only: <strong>checked</strong> (removes holes only; outer polygons of any size are kept)</li>
 </ul>
 </section>
 <section id="clip-to-the-area-of-interest" class="level3">
 <h3 class="anchored" data-anchor-id="clip-to-the-area-of-interest">7. Clip to the area of interest</h3>
-<p><strong>Pairwise Clip</strong> (Analysis)</p>
+<p><a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/analysis/pairwise-clip.htm">Pairwise Clip</a> (Analysis)</p>
 <ul>
-<li>Input: <code>gX_filled</code></li>
+<li>Input features: <code>gX_filled</code></li>
 <li>Clip features: area-of-interest boundary</li>
-<li>Output: <code>gX_clip</code></li>
+<li>Output feature class: <code>gX_clip</code></li>
 </ul>
-<p>Then <strong>Multipart To Singlepart</strong> (Data Management): output <code>gX_single</code>.</p>
-</section>
-<section id="simplify" class="level3">
-<h3 class="anchored" data-anchor-id="simplify">8. Simplify</h3>
-<p><strong>Simplify Polygon</strong> (Cartography)</p>
+<p>Then <a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/data-management/multipart-to-singlepart.htm">Multipart To Singlepart</a> (Data Management), so each separate patch becomes its own feature:</p>
 <ul>
-<li>Input: <code>gX_single</code></li>
-<li>Algorithm: <strong>Retain critical points (Douglas-Peucker)</strong></li>
-<li>Tolerance: e.g., <code>15 Meters</code></li>
-<li>Minimum area: <code>0</code></li>
-<li>Keep collapsed points: unchecked</li>
-<li>Output: <code>gX_simple</code></li>
+<li>Input features: <code>gX_clip</code></li>
+<li>Output feature class: <code>gX_single</code></li>
 </ul>
-<p>Add a text field <code>group</code> and calculate it to the group name.</p>
-<p><strong>Repeat steps 2–8 for each group.</strong> With only one group, skip step 9.</p>
 </section>
-<section id="resolve-overlaps-by-priority" class="level3">
-<h3 class="anchored" data-anchor-id="resolve-overlaps-by-priority">9. Resolve overlaps by priority</h3>
-<p>Work down the priority list, erasing everything already claimed by higher-priority groups:</p>
+<section id="simplify-and-label" class="level3">
+<h3 class="anchored" data-anchor-id="simplify-and-label">8. Simplify and label</h3>
+<p><a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/cartography/simplify-polygon.htm">Simplify Polygon</a> (Cartography; see <a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/cartography/how-simplify-line-works.htm">How Simplify Line and Simplify Polygon work</a>)</p>
+<ul>
+<li>Input features: <code>gX_single</code></li>
+<li>Output feature class: <code>gX_simple</code></li>
+<li>Simplification algorithm: <strong>Retain critical points (Douglas-Peucker)</strong></li>
+<li>Simplification tolerance: e.g., <code>15 Meters</code></li>
+<li>Minimum area: <code>0</code></li>
+<li>Handling topological errors: <strong>Resolve topological errors</strong> (keeps edges from crossing)</li>
+<li>Keep collapsed points: unchecked</li>
+</ul>
+<p>Contours have a vertex every few meters; simplifying removes most of them without visibly changing the shape.</p>
+<p><strong>Label the group.</strong> Use <a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/data-management/add-field.htm">Add Field</a> and <a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/data-management/calculate-field.htm">Calculate Field</a> on <code>gX_simple</code> to add:</p>
 <table class="caption-top table">
 <colgroup>
-<col style="width: 20%">
-<col style="width: 20%">
-<col style="width: 20%">
-<col style="width: 20%">
-<col style="width: 20%">
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
 </colgroup>
 <thead>
 <tr class="header">
-<th>Priority</th>
-<th>Tool</th>
-<th>Input</th>
+<th>Field</th>
+<th>Type</th>
+<th>Calculate Field expression (Python)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>group</code></td>
+<td>Text (length 100)</td>
+<td><code>"Group A"</code> (your group name, in quotes)</td>
+</tr>
+<tr class="even">
+<td><code>priority</code></td>
+<td>Short</td>
+<td><code>1</code> (your group’s priority number)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Repeat steps 2–8 for each group.</strong> With only one group, skip step 9 and use <code>g1_simple</code> as the input to step 10.</p>
+</section>
+<section id="resolve-overlaps-by-priority" class="level3">
+<h3 class="anchored" data-anchor-id="resolve-overlaps-by-priority">9. Resolve overlaps by priority</h3>
+<p><strong>The problem.</strong> Each group was smoothed on its own, so in mixed areas two groups can both pass the 40% contour and their polygons overlap. Picture a strip where pine and hemlock pixels are interspersed: after smoothing, the pine polygon and the hemlock polygon both cover the strip. If both were mapped, that strip would be counted twice in acreage totals, and the map would show two colors stacked on each other.</p>
+<p><strong>The rule.</strong> Each overlap goes to the higher-priority group. For each group, erase every area already covered by <em>any</em> higher-priority group. Group 1 keeps everything; group 2 loses what overlaps group 1; group 3 loses what overlaps groups 1 or 2; and so on.</p>
+<p><strong>Worked example</strong> for four groups:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Group</th>
+<th>Build the erase layer with Merge</th>
+<th>Pairwise Erase input</th>
 <th>Erase features</th>
 <th>Output</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>1</td>
-<td>(none)</td>
-<td><code>g1_simple</code></td>
-<td>(none)</td>
+<td>g1</td>
+<td>(none: use <a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/data-management/copy-features.htm">Copy Features</a> to copy <code>g1_simple</code>)</td>
+<td></td>
+<td></td>
 <td><code>g1_final</code></td>
 </tr>
 <tr class="even">
-<td>2</td>
-<td>Pairwise Erase</td>
+<td>g2</td>
+<td>(none: one layer)</td>
 <td><code>g2_simple</code></td>
-<td><code>g1_final</code></td>
+<td><code>g1_simple</code></td>
 <td><code>g2_final</code></td>
 </tr>
 <tr class="odd">
-<td>3</td>
-<td>Pairwise Erase</td>
+<td>g3</td>
+<td><code>g1_simple</code> + <code>g2_simple</code> → <code>above_g3</code></td>
 <td><code>g3_simple</code></td>
-<td>merge of <code>g1_final</code>, <code>g2_final</code></td>
+<td><code>above_g3</code></td>
 <td><code>g3_final</code></td>
 </tr>
 <tr class="even">
-<td>n</td>
-<td>Pairwise Erase</td>
-<td><code>gn_simple</code></td>
-<td>merge of all higher-priority finals</td>
-<td><code>gn_final</code></td>
+<td>g4</td>
+<td><code>g1_simple</code> + <code>g2_simple</code> + <code>g3_simple</code> → <code>above_g4</code></td>
+<td><code>g4_simple</code></td>
+<td><code>above_g4</code></td>
+<td><code>g4_final</code></td>
 </tr>
 </tbody>
 </table>
-<p>Use <strong>Merge</strong> (Data Management) to build each “claimed so far” layer, or erase sequentially one higher-priority layer at a time. The result is the same.</p>
+<p>Erasing with the <code>_simple</code> layers (before erase) gives the same result as erasing with the <code>_final</code> layers: together, groups 1 and 2 cover the same ground either way.</p>
+<p><strong>Click by click (group 3 shown; repeat for each group from priority 2 down):</strong></p>
+<ol type="1">
+<li>Open <a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/data-management/merge.htm">Merge</a> (Data Management).
+<ul>
+<li>Input datasets: add <code>g1_simple</code> and <code>g2_simple</code> (every group with a <em>higher</em> priority than the one you’re processing)</li>
+<li>Output dataset: <code>above_g3</code></li>
+<li>Leave the field map as is; the fields don’t matter for erasing.</li>
+</ul>
+The merged layer may contain overlapping polygons; that’s fine.</li>
+<li>Open <a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/analysis/pairwise-erase.htm">Pairwise Erase</a> (Analysis).
+<ul>
+<li>Input features: <code>g3_simple</code></li>
+<li>Erase features: <code>above_g3</code></li>
+<li>Output feature class: <code>g3_final</code></li>
+</ul>
+Every part of <code>g3_simple</code> that falls inside <code>above_g3</code> is removed; everything else is copied with its attributes.</li>
+</ol>
+<p>For group 2, skip the Merge and erase with <code>g1_simple</code> directly. For group 1, run Copy Features from <code>g1_simple</code> to <code>g1_final</code>.</p>
 <p>Because the erasing edges are themselves smooth contours, the cut edges stay rounded.</p>
+<p><strong>Or run it in the Python window.</strong> This does the whole step for any number of groups. Edit the two lines marked <code>EDIT</code>:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> arcpy</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>arcpy.env.workspace <span class="op">=</span> <span class="vs">r"C:\path\to\YourProject.gdb"</span>  <span class="co"># EDIT: geodatabase with the gX_simple layers</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>arcpy.env.overwriteOutput <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co"># EDIT: one entry per group, highest priority first</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>simple <span class="op">=</span> [<span class="st">"g1_simple"</span>, <span class="st">"g2_simple"</span>, <span class="st">"g3_simple"</span>, <span class="st">"g4_simple"</span>]</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k, fc <span class="kw">in</span> <span class="bu">enumerate</span>(simple, start<span class="op">=</span><span class="dv">1</span>):</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    out <span class="op">=</span> <span class="ss">f"g</span><span class="sc">{</span>k<span class="sc">}</span><span class="ss">_final"</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> k <span class="op">==</span> <span class="dv">1</span>:</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>        arcpy.management.CopyFeatures(fc, out)</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> k <span class="op">==</span> <span class="dv">2</span>:</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>        arcpy.analysis.PairwiseErase(fc, simple[<span class="dv">0</span>], out)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>        above <span class="op">=</span> <span class="ss">f"above_g</span><span class="sc">{</span>k<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>        arcpy.management.Merge(simple[:k <span class="op">-</span> <span class="dv">1</span>], above)</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>        arcpy.analysis.PairwiseErase(fc, above, out)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(out, arcpy.management.GetCount(out)[<span class="dv">0</span>], <span class="st">"polygons"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>Check:</strong></p>
+<ul>
+<li><strong>Visual:</strong> turn on <code>g1_simple</code> and <code>g2_simple</code> and find a place where they overlap. Then turn on <code>g1_final</code> and <code>g2_final</code> in the same place: <code>g2_final</code> should have a gap exactly where <code>g1_final</code> sits.</li>
+<li><strong>Area:</strong> each <code>gX_final</code> should have the same or less area than its <code>gX_simple</code>. The difference is the overlap it gave up.</li>
+<li><strong>No overlaps remain:</strong> run <a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/analysis/count-overlapping-features.htm">Count Overlapping Features</a> (Analysis) with all <code>gX_final</code> layers as inputs and <strong>Minimum Overlap Count</strong> set to <code>2</code>. The output should be empty, or contain only slivers of a few square meters from coordinate rounding.</li>
+</ul>
 </section>
 <section id="combine-and-drop-small-polygons" class="level3">
 <h3 class="anchored" data-anchor-id="combine-and-drop-small-polygons">10. Combine and drop small polygons</h3>
 <ol type="1">
-<li><strong>Merge</strong> all <code>gX_final</code> layers into one output (e.g., <code>bps_smooth</code>).</li>
-<li><strong>Multipart To Singlepart</strong> (erasing can split polygons).</li>
-<li>Add a double field <code>acres</code> and use <strong>Calculate Geometry Attributes</strong> (Area, Acres).</li>
-<li><strong>Select Layer By Attribute</strong> with <code>acres &lt;</code> your minimum (e.g., 20), then <strong>Delete Rows</strong>. Alternatively, <strong>Export Features</strong> with the query <code>acres &gt;= 20</code>.</li>
+<li><a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/data-management/merge.htm">Merge</a> (Data Management)
+<ul>
+<li>Input datasets: all <code>gX_final</code> layers</li>
+<li>Output dataset: <code>bps_smooth_all</code></li>
+<li>The <code>group</code> and <code>priority</code> fields match in every input, so the default field map keeps them.</li>
+</ul></li>
+<li><a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/data-management/multipart-to-singlepart.htm">Multipart To Singlepart</a>, because erasing can cut a polygon into pieces.
+<ul>
+<li>Input features: <code>bps_smooth_all</code></li>
+<li>Output feature class: <code>bps_smooth_parts</code></li>
+</ul></li>
+<li>Add a Double field <code>acres</code> to <code>bps_smooth_parts</code> with <strong>Add Field</strong>. Then run <a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/data-management/calculate-geometry-attributes.htm">Calculate Geometry Attributes</a>:
+<ul>
+<li>Input features: <code>bps_smooth_parts</code></li>
+<li>Field: <code>acres</code>; Property: <strong>Area</strong></li>
+<li>Area unit: <strong>Acres</strong></li>
+</ul></li>
+<li>Keep polygons at or above the minimum size with <a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/conversion/export-features.htm">Export Features</a>. This leaves <code>bps_smooth_parts</code> untouched, so you can try another minimum later.
+<ul>
+<li>Input features: <code>bps_smooth_parts</code></li>
+<li>Output feature class: <code>bps_smooth</code></li>
+<li>Filter: click <strong>New Expression</strong> and build <code>acres</code> <em>is greater than or equal to</em> <code>20</code></li>
+</ul></li>
+<li>Add a Long field <code>poly_id</code> to <code>bps_smooth</code> and use <strong>Calculate Field</strong> with the expression <code>!OBJECTID!</code>. This gives every polygon a stable ID for joins.</li>
 </ol>
+<p><code>bps_smooth</code> is the final product.</p>
 </section>
 <section id="optional-main-bps-and-purity-per-polygon" class="level3">
 <h3 class="anchored" data-anchor-id="optional-main-bps-and-purity-per-polygon">11. Optional: main BpS and purity per polygon</h3>
-<ol type="1">
-<li>Add a long integer field <code>poly_id</code> and calculate it from <code>OBJECTID</code>.</li>
-<li><strong>Tabulate Area</strong> (Spatial Analyst)
+<p>Smoothed polygons absorb some neighboring BpSs at their edges. Two attributes describe how “pure” each polygon is:</p>
 <ul>
-<li>Input zone data: the merged polygons, zone field <code>poly_id</code></li>
-<li>Input class data: <code>bps_code</code> (from step 1), class field <code>Value</code></li>
-<li>Output: area of each BPS_CODE inside each polygon</li>
-</ul></li>
-<li>For each polygon:
-<ul>
-<li><strong>Purity</strong> is the area of the group’s own BPS_CODEs divided by the polygon’s total area.</li>
-<li><strong>Main BpS</strong> is the group code with the most area.</li>
+<li><strong>purity:</strong> the share of the polygon’s area made up of its own group’s BpSs (0 to 1).</li>
+<li><strong>main_bps:</strong> the group’s BPS_CODE with the most area in the polygon. This is useful for groups with several BpSs.</li>
 </ul>
-Medians of 70–80% are typical with the starting settings. Edges absorb some neighboring BpSs.</li>
-</ol>
+<p>Both come from <a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/spatial-analyst/tabulate-area.htm">Tabulate Area</a> (Spatial Analyst), which measures how much of each BPS_CODE falls in each polygon:</p>
+<ul>
+<li>Input raster or feature zone data: <code>bps_smooth</code></li>
+<li>Zone field: <code>poly_id</code></li>
+<li>Input raster or feature class data: <code>bps_code</code> (from step 1)</li>
+<li>Class field: <code>Value</code></li>
+<li>Output table: <code>tab_bps</code></li>
+<li>Processing cell size: <code>30</code></li>
+</ul>
+<p>The output table has one row per polygon and one field per BPS_CODE, named <code>VALUE_&lt;code&gt;</code> (e.g., <code>VALUE_13022</code>), holding area in square meters.</p>
+<p>Turning that table into purity and main BpS by hand is tedious, so paste this into the Python window. Edit the three <code>EDIT</code> lines; the group names must match the <code>group</code> field exactly.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> arcpy</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>arcpy.CheckOutExtension(<span class="st">"Spatial"</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>arcpy.env.workspace <span class="op">=</span> <span class="vs">r"C:\path\to\YourProject.gdb"</span>  <span class="co"># EDIT</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>polys <span class="op">=</span> <span class="st">"bps_smooth"</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>groups <span class="op">=</span> {                                            <span class="co"># EDIT: group name -&gt; its BPS_CODEs</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Group A"</span>: [<span class="dv">13651</span>, <span class="dv">13652</span>, <span class="dv">13653</span>],</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Group B"</span>: [<span class="dv">13622</span>],</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>cell_size <span class="op">=</span> <span class="dv">30</span>                                        <span class="co"># EDIT if your BpS raster is not 30 m</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>arcpy.sa.TabulateArea(polys, <span class="st">"poly_id"</span>, <span class="st">"bps_code"</span>, <span class="st">"Value"</span>, <span class="st">"tab_bps"</span>, cell_size)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>tab_fields <span class="op">=</span> [f.name <span class="cf">for</span> f <span class="kw">in</span> arcpy.ListFields(<span class="st">"tab_bps"</span>)]</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>zone_field <span class="op">=</span> <span class="bu">next</span>(f <span class="cf">for</span> f <span class="kw">in</span> tab_fields <span class="cf">if</span> f.lower() <span class="op">==</span> <span class="st">"poly_id"</span>)</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>code_fields <span class="op">=</span> [f <span class="cf">for</span> f <span class="kw">in</span> tab_fields <span class="cf">if</span> f.upper().startswith(<span class="st">"VALUE_"</span>)]</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>areas <span class="op">=</span> {}</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> arcpy.da.SearchCursor(<span class="st">"tab_bps"</span>, [zone_field] <span class="op">+</span> code_fields) <span class="im">as</span> cur:</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> row <span class="kw">in</span> cur:</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>        areas[row[<span class="dv">0</span>]] <span class="op">=</span> {<span class="bu">int</span>(f.split(<span class="st">"_"</span>)[<span class="dv">1</span>]): (v <span class="kw">or</span> <span class="dv">0</span>) <span class="cf">for</span> f, v <span class="kw">in</span> <span class="bu">zip</span>(code_fields, row[<span class="dv">1</span>:])}</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>existing <span class="op">=</span> [f.name <span class="cf">for</span> f <span class="kw">in</span> arcpy.ListFields(polys)]</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> name, ftype <span class="kw">in</span> [(<span class="st">"main_bps"</span>, <span class="st">"LONG"</span>), (<span class="st">"purity"</span>, <span class="st">"DOUBLE"</span>)]:</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> name <span class="kw">not</span> <span class="kw">in</span> existing:</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>        arcpy.management.AddField(polys, name, ftype)</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> arcpy.da.UpdateCursor(polys, [<span class="st">"poly_id"</span>, <span class="st">"group"</span>, <span class="st">"main_bps"</span>, <span class="st">"purity"</span>]) <span class="im">as</span> cur:</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> pid, grp, _, _ <span class="kw">in</span> cur:</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>        a <span class="op">=</span> areas.get(pid, {})</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>        own <span class="op">=</span> {code: a.get(code, <span class="dv">0</span>) <span class="cf">for</span> code <span class="kw">in</span> groups[grp]}</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>        total <span class="op">=</span> <span class="bu">sum</span>(a.values())</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>        main <span class="op">=</span> <span class="bu">max</span>(own, key<span class="op">=</span>own.get)</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>        purity <span class="op">=</span> <span class="bu">sum</span>(own.values()) <span class="op">/</span> total <span class="cf">if</span> total <span class="cf">else</span> <span class="va">None</span></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>        cur.updateRow([pid, grp, main, purity])</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"done"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>To add the BpS name for <code>main_bps</code>, run <strong>Join Field</strong>:</p>
+<ul>
+<li>Input table: <code>bps_smooth</code>, Input field: <code>main_bps</code></li>
+<li>Join table: the BpS raster, Join table field: <code>BPS_CODE</code></li>
+<li>Transfer fields: <code>BPS_NAME</code></li>
+</ul>
+<p><strong>What to expect:</strong> median purity of 70–80% with the starting settings. Small or narrow polygons tend to be less pure, because more of their area is edge.</p>
 </section>
 <section id="symbolize" class="level3">
 <h3 class="anchored" data-anchor-id="symbolize">12. Symbolize</h3>
-<p>Use <strong>Unique Values</strong> on <code>group</code> with your chosen colors, at about 40% transparency so the basemap shows through.</p>
+<ol type="1">
+<li>In the <strong>Contents</strong> pane, right-click <code>bps_smooth</code> and choose <strong>Symbology</strong>.</li>
+<li>Primary symbology: <strong>Unique Values</strong>. Field 1: <code>group</code>.</li>
+<li>For each group, click its symbol, open <strong>Properties</strong>, and set the fill color. In the color dropdown choose <strong>Color Properties</strong> and type the hex code (e.g., <code>#0072B2</code>).</li>
+<li>Set outlines to the same color as the fill or to a thin (0.5 pt) dark gray, so adjacent groups stay distinct.</li>
+<li>Uncheck <strong>Show all other values</strong>.</li>
+<li>Drag the classes into priority order so the legend matches your worksheet.</li>
+<li>Select the layer, then on the <strong>Feature Layer</strong> tab, set <strong>Layer Transparency</strong> to about 40% so the basemap shows through.</li>
+<li>To share the styling, right-click the layer, choose <strong>Sharing</strong> &gt; <strong>Save As Layer File</strong>, and send the <code>.lyrx</code> file along with the data.</li>
+</ol>
 </section>
 </section>
 <section id="quality-checks" class="level2">
 <h2 class="anchored" data-anchor-id="quality-checks">Quality checks</h2>
 <ul>
 <li><strong>Visual check:</strong> zoom into a few areas with the raw BpS raster (group pixels highlighted) under the polygon outlines. Edges should follow the bulk of the pixels without stair steps.</li>
-<li><strong>Acreage check:</strong> compare each group’s smoothed acres to its raw pixel acres (pixel count × 0.2224 acres for 30 m cells; get counts from the attribute table or <strong>Tabulate Area</strong>).
+<li><strong>Acreage check:</strong> compare each group’s smoothed acres to its raw pixel acres.
+<ul>
+<li><strong>Smoothed acres:</strong> select the group in <code>bps_smooth</code> and look at the statistics of <code>acres</code>. Alternatively, run <strong>Summary Statistics</strong> with <code>acres</code> SUM and case field <code>group</code>.</li>
+<li><strong>Raw acres:</strong> the number of group pixels × 0.2224 acres for 30 m cells. Get the pixel count from the <code>COUNT</code> field of the BpS attribute table (summed over the group’s rows) or from <strong>Tabulate Area</strong>.</li>
+</ul>
+How to read the ratio of smoothed to raw acres:
 <ul>
 <li><strong>Roughly 90–110%:</strong> typical for widespread groups that occur in large patches.</li>
-<li><strong>Well above 100%:</strong> the contour is absorbing neighboring types in mixed areas. Raise the contour level or reduce sigma.</li>
-<li><strong>Well below 100%:</strong> the group occurs as small or scattered patches that fall below the contour level or the minimum size. Lower the contour level, reduce sigma, or lower the minimum size, if those patches matter.</li>
+<li><strong>Well above 100%:</strong> the contour is absorbing neighboring types in mixed areas. Raise the contour level.</li>
+<li><strong>Well below 100%:</strong> the group occurs as small or scattered patches that fall below the contour level or the minimum size. Lower the contour level or the minimum size, if those patches matter.</li>
 </ul></li>
-<li><strong>Overlaps:</strong> after step 9, a <strong>Pairwise Intersect</strong> of the output with itself should return no areas between different groups.</li>
+<li><strong>Overlaps:</strong> see the check at the end of step 9.</li>
 </ul>
 </section>
 <section id="tuning" class="level2">
 <h2 class="anchored" data-anchor-id="tuning">Tuning</h2>
 <ul>
-<li><strong>Rounder, simpler shapes:</strong> increase sigma (e.g., 120–150 m) and regenerate the kernel.</li>
-<li><strong>Capture narrow or scattered patches:</strong> lower the contour level (e.g., 0.35) or reduce sigma (e.g., 75–90 m). Expect polygons to grow into neighboring types.</li>
-<li><strong>Group-specific settings:</strong> each group can use its own sigma and contour level. Scattered types benefit from a smaller sigma or lower contour.</li>
+<li><strong>Rounder, simpler shapes:</strong> add a second or third blur pass (step 4).</li>
+<li><strong>Capture narrow or scattered patches:</strong> lower the contour level (e.g., 0.35). Expect polygons to grow into neighboring types.</li>
+<li><strong>Group-specific settings:</strong> each group can use its own contour level or number of passes. Scattered types benefit from a lower contour level and a single pass.</li>
 <li><strong>Map scale:</strong>
 <ul>
-<li><strong>Small areas or large-scale maps:</strong> use a smaller sigma, a smaller minimum size, and possibly no aggregation (cell factor 1 with a kernel built for 30 m cells; slower).</li>
-<li><strong>Regional extents:</strong> use a larger sigma and aggregation factor.</li>
+<li><strong>Small areas or large-scale maps:</strong> use a smaller minimum size, and possibly no aggregation (cell factor 1, so the blur works on 30 m cells; slower).</li>
+<li><strong>Regional extents:</strong> use a larger aggregation factor or more blur passes.</li>
 </ul></li>
-<li><strong>Simplify tolerance:</strong> keep it well below sigma so shapes stay rounded. Increase it only if file size matters (e.g., web maps).</li>
+<li><strong>Simplify tolerance:</strong> keep it well below the cell size so shapes stay rounded. Increase it only if file size matters (e.g., web maps).</li>
 </ul>
-</section>
-<section id="making-a-kernel-file" class="level2">
-<h2 class="anchored" data-anchor-id="making-a-kernel-file">Making a kernel file</h2>
-<p>The kernel is a normalized 2-D Gaussian extending 3 sigma from the center. It is the same as <code>terra::focalMat(r, sigma, "Gauss")</code> in R. Run this in the ArcGIS Pro Python window or any Python with numpy, setting <code>cell_m</code> to the cell size <strong>after</strong> aggregation:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> write_gauss_kernel(path, sigma_m, cell_m):</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    half <span class="op">=</span> <span class="bu">int</span>(np.floor(<span class="dv">3</span> <span class="op">*</span> sigma_m <span class="op">/</span> cell_m))</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    d <span class="op">=</span> np.arange(<span class="op">-</span>half, half <span class="op">+</span> <span class="dv">1</span>) <span class="op">*</span> cell_m</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    x, y <span class="op">=</span> np.meshgrid(d, d)</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    w <span class="op">=</span> np.exp(<span class="op">-</span>(x<span class="op">**</span><span class="dv">2</span> <span class="op">+</span> y<span class="op">**</span><span class="dv">2</span>) <span class="op">/</span> (<span class="dv">2</span> <span class="op">*</span> sigma_m<span class="op">**</span><span class="dv">2</span>))</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    w <span class="op">=</span> w <span class="op">/</span> w.<span class="bu">sum</span>()</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> <span class="bu">open</span>(path, <span class="st">"w"</span>) <span class="im">as</span> f:</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        f.write(<span class="ss">f"</span><span class="sc">{</span>w<span class="sc">.</span>shape[<span class="dv">1</span>]<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>w<span class="sc">.</span>shape[<span class="dv">0</span>]<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span>)</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> row <span class="kw">in</span> w:</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>            f.write(<span class="st">" "</span>.join(<span class="ss">f"</span><span class="sc">{</span>v<span class="sc">:.8f}</span><span class="ss">"</span> <span class="cf">for</span> v <span class="kw">in</span> row) <span class="op">+</span> <span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>write_gauss_kernel(<span class="st">"gauss_kernel_90m_sigma100.txt"</span>, sigma_m<span class="op">=</span><span class="dv">100</span>, cell_m<span class="op">=</span><span class="dv">90</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>The first line of the file is the kernel width and height in cells; the following lines are the weights, row by row.</p>
+<p>When tuning, rerun only from the step whose setting changed:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Setting</th>
+<th>Rerun from</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Blur passes</td>
+<td>Step 4</td>
+</tr>
+<tr class="even">
+<td>Contour level</td>
+<td>Step 5</td>
+</tr>
+<tr class="odd">
+<td>Hole size</td>
+<td>Step 6</td>
+</tr>
+<tr class="even">
+<td>Simplify tolerance</td>
+<td>Step 8</td>
+</tr>
+<tr class="odd">
+<td>Minimum polygon size</td>
+<td>Step 10, item 4</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="caveats" class="level2">
 <h2 class="anchored" data-anchor-id="caveats">Caveats</h2>
@@ -566,8 +783,137 @@ Medians of 70–80% are typical with the starting settings. Edges absorb some ne
 <li><strong>Edges are approximate:</strong> polygon edges are the chosen neighborhood-share line, not an observed boundary. Use the polygons for planning-scale display and screening, not site-level decisions.</li>
 <li><strong>Software differences:</strong> results from ArcGIS Pro and other software (e.g., the R <code>terra</code> + <code>isoband</code> equivalent) differ slightly because contour interpolation and simplification algorithms differ. Expect differences of a few percent in acres.</li>
 </ul>
+</section>
+<section id="learn-more" class="level2">
+<h2 class="anchored" data-anchor-id="learn-more">Learn more</h2>
+<section id="landfire-and-biophysical-settings" class="level3">
+<h3 class="anchored" data-anchor-id="landfire-and-biophysical-settings">LANDFIRE and Biophysical Settings</h3>
+<ul>
+<li><a href="https://landfire.gov">LANDFIRE home</a>: data downloads, documentation and training.</li>
+<li><a href="https://landfire.gov/vegetation/bps">Biophysical Settings overview</a>: what BpS represents and how it was mapped.</li>
+<li><a href="https://landfire.gov/vegetation/bps-models">BpS models and descriptions</a>: the description document for each BpS (vegetation, disturbance regimes, succession classes).</li>
+<li><a href="https://www.landfire.gov/viewer/">LANDFIRE viewer</a>: browse and download data for an area of interest.</li>
+<li>Blankenship, K., R. Swaty, K.R. Hall, S. Hagen, et al.&nbsp;2021. Vegetation dynamics models: a comprehensive set for natural resource assessment and planning in the United States. <em>Ecosphere</em> 12(4):e03484. <a href="https://doi.org/10.1002/ecs2.3484">doi:10.1002/ecs2.3484</a></li>
+<li><a href="https://CRAN.R-project.org/package=rlandfire">rlandfire</a>: an R package for downloading LANDFIRE data by script.</li>
+</ul>
+</section>
+<section id="concepts-behind-each-step" class="level3">
+<h3 class="anchored" data-anchor-id="concepts-behind-each-step">Concepts behind each step</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Concept</th>
+<th>Where it is used</th>
+<th>Resources</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Map algebra and neighborhood (focal) operations</td>
+<td>Steps 2–4</td>
+<td><a href="https://en.wikipedia.org/wiki/Map_algebra">Map algebra (Wikipedia)</a>; <a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/spatial-analyst/an-overview-of-the-neighborhood-tools.htm">Overview of the Neighborhood tools</a></td>
+</tr>
+<tr class="even">
+<td>Changing resolution (aggregation)</td>
+<td>Step 3</td>
+<td><a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/spatial-analyst/how-aggregate-works.htm">How Aggregate works</a></td>
+</tr>
+<tr class="odd">
+<td>Smoothing with a moving-window mean (and why repeated passes approach a Gaussian blur)</td>
+<td>Step 4</td>
+<td><a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/spatial-analyst/how-focal-statistics-works.htm">How Focal Statistics works</a>; <a href="https://en.wikipedia.org/wiki/Gaussian_blur">Gaussian blur (Wikipedia)</a></td>
+</tr>
+<tr class="even">
+<td>Contouring (isolines and isobands)</td>
+<td>Step 5</td>
+<td><a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/spatial-analyst/how-contouring-works.htm">How Contouring works</a>; <a href="https://en.wikipedia.org/wiki/Marching_squares">Marching squares (Wikipedia)</a>, the standard algorithm for tracing contours on a grid</td>
+</tr>
+<tr class="odd">
+<td>Line simplification</td>
+<td>Step 8</td>
+<td><a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/cartography/how-simplify-line-works.htm">How Simplify Line and Simplify Polygon work</a>; <a href="https://en.wikipedia.org/wiki/Ramer%E2%80%93Douglas%E2%80%93Peucker_algorithm">Ramer-Douglas-Peucker algorithm (Wikipedia)</a></td>
+</tr>
+<tr class="even">
+<td>Overlay (erase, overlap)</td>
+<td>Step 9</td>
+<td><a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/analysis/pairwise-erase.htm">Pairwise Erase</a>; <a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/analysis/count-overlapping-features.htm">Count Overlapping Features</a></td>
+</tr>
+<tr class="odd">
+<td>Zonal summaries</td>
+<td>Step 11</td>
+<td><a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/spatial-analyst/tabulate-area.htm">Tabulate Area</a>; <a href="https://pro.arcgis.com/en/pro-app/latest/tool-reference/spatial-analyst/zonal-statistics-as-table.htm">Zonal Statistics as Table</a></td>
+</tr>
+<tr class="even">
+<td>Cartographic generalization</td>
+<td>The whole workflow</td>
+<td><a href="https://en.wikipedia.org/wiki/Cartographic_generalization">Cartographic generalization (Wikipedia)</a></td>
+</tr>
+<tr class="odd">
+<td>Minimum mapping unit</td>
+<td>Steps 6 and 10</td>
+<td>Saura 2002 (below)</td>
+</tr>
+<tr class="even">
+<td>Accessible color</td>
+<td>Step 12</td>
+<td><a href="https://jfly.uni-koeln.de/color/">Okabe and Ito, Color Universal Design</a>; Wong 2011 (below)</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="key-papers" class="level3">
+<h3 class="anchored" data-anchor-id="key-papers">Key papers</h3>
+<ul>
+<li>Douglas, D.H., and T.K. Peucker. 1973. Algorithms for the reduction of the number of points required to represent a digitized line or its caricature. <em>Cartographica</em> 10(2):112–122. <a href="https://doi.org/10.3138/FM57-6770-U75U-7727">doi:10.3138/FM57-6770-U75U-7727</a></li>
+<li>Saura, S. 2002. Effects of minimum mapping unit on land cover data spatial configuration and composition. <em>International Journal of Remote Sensing</em> 23(22):4853–4880. <a href="https://doi.org/10.1080/01431160110114493">doi:10.1080/01431160110114493</a></li>
+<li>Wong, B. 2011. Points of view: Color blindness. <em>Nature Methods</em> 8:441. <a href="https://doi.org/10.1038/nmeth.1618">doi:10.1038/nmeth.1618</a></li>
+</ul>
+</section>
+<section id="learning-gis" class="level3">
+<h3 class="anchored" data-anchor-id="learning-gis">Learning GIS</h3>
+<ul>
+<li><a href="https://learn.arcgis.com/en/">Learn ArcGIS</a>: free, guided ArcGIS Pro lessons. Search for “Spatial Analyst” or “raster analysis”.</li>
+<li><a href="https://datacarpentry.org/r-raster-vector-geospatial/">Data Carpentry: Introduction to Geospatial Raster and Vector Data with R</a>: beginner-friendly lessons.</li>
+<li><a href="https://r.geocompx.org/">Geocomputation with R</a>: free online book; see the chapters on raster operations and geometry operations.</li>
+<li><a href="https://rspatial.org/">Spatial Data Science with R</a>: tutorials for the <code>terra</code> package.</li>
+<li><a href="https://r-spatial.org/book/">Spatial Data Science: With Applications in R</a> (Pebesma and Bivand): free online book on <code>sf</code> and spatial data concepts.</li>
+</ul>
+</section>
+<section id="the-same-workflow-in-r" class="level3">
+<h3 class="anchored" data-anchor-id="the-same-workflow-in-r">The same workflow in R</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>ArcGIS Pro step</th>
+<th>R function</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Aggregate</td>
+<td><a href="https://rspatial.github.io/terra/reference/aggregate.html"><code>terra::aggregate()</code></a></td>
+</tr>
+<tr class="even">
+<td>Focal Statistics (3 × 3 mean)</td>
+<td><a href="https://rspatial.github.io/terra/reference/focal.html"><code>terra::focal(x, w = 3, fun = "mean")</code></a></td>
+</tr>
+<tr class="odd">
+<td>Contour</td>
+<td><a href="https://isoband.r-lib.org/"><code>isoband::isobands()</code></a></td>
+</tr>
+<tr class="even">
+<td>Simplify Polygon</td>
+<td><a href="https://r-spatial.github.io/sf/reference/geos_unary.html"><code>sf::st_simplify()</code></a></td>
+</tr>
+<tr class="odd">
+<td>Pairwise Erase</td>
+<td><a href="https://r-spatial.github.io/sf/reference/geos_binary_ops.html"><code>sf::st_difference()</code></a></td>
+</tr>
+</tbody>
+</table>
 
 
+</section>
 </section>
 </section>
 
